@@ -1,0 +1,26 @@
+# make sure we don't push the executable.
+gjoa
+!gjoa/
+
+*.o
+*.a
+*.so
+*.out
+*.test
+out.*
+
+# Folders
+_obj
+_test
+tmp
+old
+log*
+out
+
+*.exe
+*.bak
+*~
+*.sublime-workspace
+
+darwin
+.DS_Store
