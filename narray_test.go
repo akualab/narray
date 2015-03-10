@@ -24,8 +24,7 @@ func panics(fun func()) (b bool) {
 	return
 }
 
-var x *NArray
-var y *NArray
+var x, y, na234 *NArray
 
 func TestMain(m *testing.M) {
 
@@ -35,6 +34,16 @@ func TestMain(m *testing.M) {
 		for j := 0; j < 5; j++ {
 			x.Data[i*5+j] = float64(i*5 + j)
 			y.Data[i*5+j] = float64(i*5 + j + 2)
+		}
+	}
+
+	na234 = New(2, 3, 4)
+	for i := 0; i < 2; i++ {
+		for j := 0; j < 3; j++ {
+			for k := 0; k < 4; k++ {
+				v := float64(9000 + i*100 + j*10 + k)
+				na234.Set(v, i, j, k)
+			}
 		}
 	}
 
@@ -96,6 +105,89 @@ func TestSet(t *testing.T) {
 						t.Fatalf("values don't match - na.At(%d,%d,%d,%d) is [%f], expected [%f]",
 							i, j, k, l, v, float64(na.Index(i, j, k, l)))
 					}
+				}
+			}
+		}
+	}
+}
+
+func TestVector(t *testing.T) {
+
+	vec := na234.Vector(0, 1)
+	t.Log(vec)
+	checkVector(t, 0, 1, vec)
+	vec = na234.Vector(1, 2)
+	t.Log(vec)
+	checkVector(t, 1, 2, vec)
+	vec = na234.Vector(2, 0)
+	t.Log(vec)
+	checkVector(t, 2, 0, vec)
+
+}
+
+func checkVector(t *testing.T, dim, idx int, vec *NArray) {
+
+	for _, v := range vec.Data {
+		x := int(v - 9000)
+		i := int(x / 100)
+		x = x - (i * 100)
+		j := int(x / 10)
+		k := int(x - (j * 10))
+		if v != na234.At(i, j, k) {
+			t.Fatalf("vec values dont' match fir index (%d,%d,%d) v:%d, expected:%d", i, j, k, v, na234.At(i, j, k))
+		}
+	}
+}
+
+func TestCartesianProduct(t *testing.T) {
+
+	cp := cartesianProduct([]int{2, 3, 4})
+	t.Log(cp)
+}
+
+func TestQuerySubset(t *testing.T) {
+
+	qs := querySubset([]int{-1, -1, 1}, []int{2, 3, 4})
+	t.Log(qs)
+}
+
+func TestSubArray(t *testing.T) {
+	sa := na234.SubArray(-1, -1, 1)
+	t.Log(sa)
+
+	for i := 0; i < 2; i++ {
+		for j := 0; j < 3; j++ {
+			k := 1
+			if na234.At(i, j, k) != sa.At(i, j) {
+				t.Fatalf("element mismatch got %f expected %f", na234.At(i, j, k), sa.At(i, j))
+			}
+		}
+	}
+	{
+		sa = na234.SubArray(0, -1, 2)
+		i := 0
+		k := 2
+		for j := 0; j < 3; j++ {
+			if na234.At(i, j, k) != sa.At(j) {
+				t.Fatalf("element mismatch got %f expected %f", na234.At(i, j, k), sa.At(j))
+			}
+		}
+	}
+	{
+		sa = na234.SubArray(0, 2, 2)
+		i := 0
+		j := 2
+		k := 2
+		if na234.At(i, j, k) != sa.At() {
+			t.Fatalf("element mismatch got %f expected %f", na234.At(i, j, k), sa.At())
+		}
+	}
+	sa = na234.SubArray(-1, -1, -1)
+	for i := 0; i < 2; i++ {
+		for j := 0; j < 3; j++ {
+			for k := 0; k < 4; k++ {
+				if na234.At(i, j, k) != sa.At(i, j, k) {
+					t.Fatalf("element mismatch got %f expected %f", na234.At(i, j, k), sa.At(i, j, k))
 				}
 			}
 		}
@@ -308,4 +400,24 @@ func TestProd(t *testing.T) {
 		t.Fatalf("expected 24, got %f", x.Prod())
 	}
 
+}
+
+func BenchmarkRead(b *testing.B) {
+
+	rank := rand.Intn(10)
+	dims := make([]int, rank, rank)
+	for k := range dims {
+		dims[k] = rand.Intn(5) + 1
+	}
+	na := New(dims...)
+	indices := make([]int, rank, rank)
+	for j := range indices {
+		indices[j] = rand.Intn(dims[j])
+	}
+
+	var w float64
+	for i := 0; i < b.N; i++ {
+		w = na.At(indices...)
+	}
+	_ = w
 }

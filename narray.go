@@ -18,7 +18,10 @@ The shape is a vector with the size of each dimension. Typical cases:
 */
 package narray
 
-import "math"
+import (
+	"fmt"
+	"math"
+)
 
 // The NArray object.
 type NArray struct {
@@ -46,6 +49,7 @@ func New(shape ...int) *NArray {
 		strides[i] = s
 		s *= shape[i]
 	}
+
 	return &NArray{
 		Rank:    rank,
 		Shape:   shape,
@@ -57,6 +61,11 @@ func New(shape ...int) *NArray {
 // At returns the value for indices.
 func (na *NArray) At(indices ...int) float64 {
 
+	if len(indices) != na.Rank {
+		fmt.Errorf("inconsistent number of indices for narray - [%d] vs [%d]", len(indices), na.Rank)
+	}
+
+	//	return na.Data[na.Index(indices...)]
 	return na.Data[na.Index(indices...)]
 }
 
@@ -356,13 +365,146 @@ func (na *NArray) SetValue(v float64) *NArray {
 	return na
 }
 
-// SubArray returns a subset based on a list of dimensions.
+// Vector returns a subarray of rank 1 as follows:
 //
-// Example:
-//   // For 2x2 matrix return a vector
-//   x := New(2,2)
-//   y := x.SubArray(1)
+// Example, given a 5x10 matrix (rank=2), return the vector
+// of dim 10 for row idx=3:
 //
-//func (na *NArray) SubArray(ranges ...Range) *NArray {
+//   x := New(5,10)
+//   y := x.SubArray(1,3) // dim=1, idx=3
+//   // y = {x_30, x_31, ... , x_39}
+//
+func (na *NArray) Vector(dim, idx int) *NArray {
 
-//}
+	if len(na.Shape) == 0 {
+		panic("cannot get vector from narray with rank=0")
+	}
+
+	vLen := 1
+	for k, v := range na.Shape {
+		if k != dim {
+			vLen *= v
+		}
+	}
+	newArr := New(vLen)
+	stride := na.Strides[dim]
+	shape := na.Shape[dim]
+	ncopies := vLen / stride
+	inc := shape * stride
+	//fmt.Println("dim: ", dim, "idx: ", idx, "stride: ", stride, "shape: ",
+	//	shape, "vlen: ", vLen, "ncopies: ", ncopies, "inc: ", inc)
+
+	end := 0
+	to := 0
+	start := stride * idx
+	for i := 0; i < ncopies; i++ {
+		end = start + stride
+		copy(newArr.Data[to:], na.Data[start:end])
+		start += inc
+		to += stride
+	}
+
+	return newArr
+}
+
+// SubArray returns a subarray of rank 1 as follows:
+//
+// Example, given an narray with shape 2x3x4 (rank=3), return the subarray
+// of rank=2 corresponding for dim[2]=1
+//
+//   x := New(2,3,4)
+//   y := x.SubArray(-1,-1,1) // use -1 to select a dimension.
+//   // y = {x(0,0,1), x(0,1,1), x(0,2,1), x(1,0,1), ...}
+//
+func (na *NArray) SubArray(query ...int) *NArray {
+
+	if len(na.Shape) == 0 {
+		panic("cannot get subarray from narray with rank=0")
+	}
+
+	qs := querySubset(query, na.Shape)
+	var ns []int // new shape
+	for k, v := range query {
+		if v < 0 {
+			ns = append(ns, na.Shape[k])
+		}
+	}
+	newArr := New(ns...)
+	for k, v := range qs {
+		newArr.Data[k] = na.At(v...)
+	}
+
+	return newArr
+}
+
+// Reshape returns an narray with a new shape.
+func (na *NArray) Reshape(dim ...int) *NArray {
+	panic("not implemented")
+}
+
+func cartesianProduct(s []int) [][]int {
+
+	if len(s) == 1 {
+		z := make([][]int, s[0], s[0])
+		for k := range z {
+			z[k] = []int{k}
+		}
+		return z
+	}
+	var result [][]int
+	for i := 0; i < s[0]; i++ {
+		x := cartesianProduct(s[1:])
+		for _, v := range x {
+			var sl []int
+			sl = append(sl, i)
+			sl = append(sl, v...)
+			result = append(result, sl)
+		}
+	}
+	return result
+}
+
+// generates subset for query q.
+func querySubset(q, s []int) [][]int {
+
+	if len(q) != len(s) {
+		panic("size mismatch")
+	}
+
+	if len(s) == 1 {
+		if q[0] >= 0 {
+			return [][]int{[]int{q[0]}}
+		} else {
+			z := make([][]int, s[0], s[0])
+			for k := range z {
+				z[k] = []int{k}
+			}
+			return z
+		}
+	}
+	var result [][]int
+	if q[0] >= 0 {
+
+		x := querySubset(q[1:], s[1:])
+		for _, v := range x {
+			var sl []int
+			sl = append(sl, q[0])
+			sl = append(sl, v...)
+			result = append(result, sl)
+		}
+
+	} else {
+
+		for i := 0; i < s[0]; i++ {
+			x := querySubset(q[1:], s[1:])
+			for _, v := range x {
+				var sl []int
+				sl = append(sl, i)
+				sl = append(sl, v...)
+				result = append(result, sl)
+			}
+		}
+
+	}
+	return result
+}
