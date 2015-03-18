@@ -380,24 +380,54 @@ func TestMin(t *testing.T) {
 }
 
 func TestSum(t *testing.T) {
-	x = New(3, 3)
-	x.Set(1, 1, 1)
-	x.Set(2, 1, 2)
-	x.Set(3, 2, 2)
-	if x.Sum() != 6.0 {
-		t.Fatalf("expected 6, got %f", x.Sum())
+	xx := New(3, 3)
+	xx.Set(1, 1, 1)
+	xx.Set(2, 1, 2)
+	xx.Set(3, 2, 2)
+	if xx.Sum() != 6.0 {
+		t.Fatalf("expected 6, got %f", xx.Sum())
+	}
+}
+
+func TestProd(t *testing.T) {
+	xx := New(2, 2)
+	xx.Set(1, 0, 0)
+	xx.Set(2, 0, 1)
+	xx.Set(3, 1, 0)
+	xx.Set(4, 1, 1)
+	if xx.Prod() != 24.0 {
+		t.Fatalf("expected 24, got %f", x.Prod())
+	}
+}
+
+func TestMinElem(t *testing.T) {
+
+	na := x.Copy()
+	t.Log(na)
+	na.MinElem(-9999, 1, 1)
+	na.MinElem(9999, 2, 2)
+
+	if na.At(1, 1) != -9999 {
+		t.Fatalf("expected %f, got %f", -9999.0, na.At(1, 1))
+	}
+	if na.At(2, 2) != x.At(2, 2) {
+		t.Fatalf("expected %f, got %f", x.At(2, 2), na.At(2, 2))
 	}
 
 }
 
-func TestProd(t *testing.T) {
-	x = New(2, 2)
-	x.Set(1, 0, 0)
-	x.Set(2, 0, 1)
-	x.Set(3, 1, 0)
-	x.Set(4, 1, 1)
-	if x.Prod() != 24.0 {
-		t.Fatalf("expected 24, got %f", x.Prod())
+func TestMaxElem(t *testing.T) {
+
+	na := x.Copy()
+	t.Log(na)
+	na.MaxElem(-9999, 1, 1)
+	na.MaxElem(9999, 2, 2)
+
+	if na.At(2, 2) != 9999 {
+		t.Fatalf("expected %f, got %f", -9999.0, na.At(2, 2))
+	}
+	if na.At(1, 1) != x.At(1, 1) {
+		t.Fatalf("expected %f, got %f", x.At(1, 1), na.At(1, 1))
 	}
 
 }

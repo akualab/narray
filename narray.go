@@ -75,12 +75,6 @@ func (na *NArray) Set(v float64, indices ...int) {
 	na.Data[na.Index(indices...)] = v
 }
 
-// Inc increments the value of an narray element.
-func (na *NArray) Inc(v float64, indices ...int) {
-
-	na.Data[na.Index(indices...)] += v
-}
-
 // Index transforms a set of subscripts to a an index in the underlying one-dimensional slice.
 func (na *NArray) Index(indices ...int) int {
 
@@ -150,6 +144,32 @@ func EqualShape(x *NArray, ys ...*NArray) bool {
 		}
 	}
 	return true
+}
+
+// Inc increments the value of an narray element.
+func (na *NArray) Inc(v float64, indices ...int) {
+
+	na.Data[na.Index(indices...)] += v
+}
+
+// MaxElem compares value to element and replaces element if
+// value is greater than element.
+func (na *NArray) MaxElem(v float64, indices ...int) {
+
+	idx := na.Index(indices...)
+	if v > na.Data[idx] {
+		na.Data[idx] = v
+	}
+}
+
+// MinElem compares value to element and replaces element if
+// value is less than element.
+func (na *NArray) MinElem(v float64, indices ...int) {
+
+	idx := na.Index(indices...)
+	if v < na.Data[idx] {
+		na.Data[idx] = v
+	}
 }
 
 // Add adds narrays elementwise.
@@ -464,27 +484,26 @@ func cartesianProduct(s []int) [][]int {
 	return result
 }
 
-// generates subset for query q.
+// Recursively find indices for query q.
+// Helper func to generate narray subsets.
 func querySubset(q, s []int) [][]int {
 
 	if len(q) != len(s) {
 		panic("size mismatch")
 	}
-
-	if len(s) == 1 {
-		if q[0] >= 0 {
-			return [][]int{[]int{q[0]}}
-		} else {
-			z := make([][]int, s[0], s[0])
-			for k := range z {
-				z[k] = []int{k}
-			}
-			return z
-		}
-	}
 	var result [][]int
-	if q[0] >= 0 {
 
+	switch {
+	case len(s) == 1 && q[0] >= 0:
+		result = [][]int{[]int{q[0]}}
+
+	case len(s) == 1 && q[0] < 0:
+		result = make([][]int, s[0], s[0])
+		for k := range result {
+			result[k] = []int{k}
+		}
+
+	case q[0] >= 0:
 		x := querySubset(q[1:], s[1:])
 		for _, v := range x {
 			var sl []int
@@ -493,8 +512,7 @@ func querySubset(q, s []int) [][]int {
 			result = append(result, sl)
 		}
 
-	} else {
-
+	case q[0] < 0:
 		for i := 0; i < s[0]; i++ {
 			x := querySubset(q[1:], s[1:])
 			for _, v := range x {
@@ -504,7 +522,6 @@ func querySubset(q, s []int) [][]int {
 				result = append(result, sl)
 			}
 		}
-
 	}
 	return result
 }
