@@ -25,7 +25,7 @@ import (
 
 // The NArray object.
 type NArray struct {
-	// The rank or order or degree of the narray is the dimensionality required to represent it. (eg. The rank of a vector is 2)
+	// The rank or order or degree of the narray is the dimensionality required to represent it. (eg. The rank of a vector is 1)
 	Rank int
 	// The shape is an int slice that contains the size of each dimension. Subscripts range from zero to s-1. Where s is the size of a dimension.
 	Shape []int
