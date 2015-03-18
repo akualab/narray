@@ -427,13 +427,13 @@ func (na *NArray) Vector(dim, idx int) *NArray {
 	return newArr
 }
 
-// SubArray returns a subarray of rank 1 as follows:
+// SubArray returns an narray of lower rank as follows:
 //
 // Example, given an narray with shape 2x3x4 (rank=3), return the subarray
-// of rank=2 corresponding for dim[2]=1
+// of rank=2 corresponding to dim[2]=1
 //
 //   x := New(2,3,4)
-//   y := x.SubArray(-1,-1,1) // use -1 to select a dimension.
+//   y := x.SubArray(-1,-1,1) // use -1 to select a dimension. Put a 1 in dim=2 (third argument).
 //   // y = {x(0,0,1), x(0,1,1), x(0,2,1), x(1,0,1), ...}
 //
 func (na *NArray) SubArray(query ...int) *NArray {
