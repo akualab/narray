@@ -11,8 +11,8 @@ func Abs(out, in *NArray) *NArray {
 	if out == nil {
 		out = New(in.Shape...)
 	}
-	for k := range in.Data {
-		out.Data[k] = math.Abs(in.Data[k])
+	for k, v := range in.Data {
+		out.Data[k] = math.Abs(v)
 	}
 	return out
 }
@@ -23,8 +23,8 @@ func Acosh(out, in *NArray) *NArray {
 	if out == nil {
 		out = New(in.Shape...)
 	}
-	for k := range in.Data {
-		out.Data[k] = math.Acosh(in.Data[k])
+	for k, v := range in.Data {
+		out.Data[k] = math.Acosh(v)
 	}
 	return out
 }
@@ -35,8 +35,8 @@ func Asin(out, in *NArray) *NArray {
 	if out == nil {
 		out = New(in.Shape...)
 	}
-	for k := range in.Data {
-		out.Data[k] = math.Asin(in.Data[k])
+	for k, v := range in.Data {
+		out.Data[k] = math.Asin(v)
 	}
 	return out
 }
@@ -47,8 +47,8 @@ func Acos(out, in *NArray) *NArray {
 	if out == nil {
 		out = New(in.Shape...)
 	}
-	for k := range in.Data {
-		out.Data[k] = math.Acos(in.Data[k])
+	for k, v := range in.Data {
+		out.Data[k] = math.Acos(v)
 	}
 	return out
 }
@@ -59,8 +59,8 @@ func Asinh(out, in *NArray) *NArray {
 	if out == nil {
 		out = New(in.Shape...)
 	}
-	for k := range in.Data {
-		out.Data[k] = math.Asinh(in.Data[k])
+	for k, v := range in.Data {
+		out.Data[k] = math.Asinh(v)
 	}
 	return out
 }
@@ -71,8 +71,8 @@ func Atan(out, in *NArray) *NArray {
 	if out == nil {
 		out = New(in.Shape...)
 	}
-	for k := range in.Data {
-		out.Data[k] = math.Atan(in.Data[k])
+	for k, v := range in.Data {
+		out.Data[k] = math.Atan(v)
 	}
 	return out
 }
@@ -83,8 +83,8 @@ func Atanh(out, in *NArray) *NArray {
 	if out == nil {
 		out = New(in.Shape...)
 	}
-	for k := range in.Data {
-		out.Data[k] = math.Atanh(in.Data[k])
+	for k, v := range in.Data {
+		out.Data[k] = math.Atanh(v)
 	}
 	return out
 }
@@ -95,8 +95,8 @@ func Cbrt(out, in *NArray) *NArray {
 	if out == nil {
 		out = New(in.Shape...)
 	}
-	for k := range in.Data {
-		out.Data[k] = math.Cbrt(in.Data[k])
+	for k, v := range in.Data {
+		out.Data[k] = math.Cbrt(v)
 	}
 	return out
 }
@@ -107,8 +107,8 @@ func Erf(out, in *NArray) *NArray {
 	if out == nil {
 		out = New(in.Shape...)
 	}
-	for k := range in.Data {
-		out.Data[k] = math.Erf(in.Data[k])
+	for k, v := range in.Data {
+		out.Data[k] = math.Erf(v)
 	}
 	return out
 }
@@ -119,8 +119,8 @@ func Erfc(out, in *NArray) *NArray {
 	if out == nil {
 		out = New(in.Shape...)
 	}
-	for k := range in.Data {
-		out.Data[k] = math.Erfc(in.Data[k])
+	for k, v := range in.Data {
+		out.Data[k] = math.Erfc(v)
 	}
 	return out
 }
@@ -131,8 +131,8 @@ func Exp(out, in *NArray) *NArray {
 	if out == nil {
 		out = New(in.Shape...)
 	}
-	for k := range in.Data {
-		out.Data[k] = math.Exp(in.Data[k])
+	for k, v := range in.Data {
+		out.Data[k] = math.Exp(v)
 	}
 	return out
 }
@@ -143,8 +143,8 @@ func Exp2(out, in *NArray) *NArray {
 	if out == nil {
 		out = New(in.Shape...)
 	}
-	for k := range in.Data {
-		out.Data[k] = math.Exp2(in.Data[k])
+	for k, v := range in.Data {
+		out.Data[k] = math.Exp2(v)
 	}
 	return out
 }
@@ -155,8 +155,8 @@ func Expm1(out, in *NArray) *NArray {
 	if out == nil {
 		out = New(in.Shape...)
 	}
-	for k := range in.Data {
-		out.Data[k] = math.Expm1(in.Data[k])
+	for k, v := range in.Data {
+		out.Data[k] = math.Expm1(v)
 	}
 	return out
 }
@@ -167,8 +167,8 @@ func Floor(out, in *NArray) *NArray {
 	if out == nil {
 		out = New(in.Shape...)
 	}
-	for k := range in.Data {
-		out.Data[k] = math.Floor(in.Data[k])
+	for k, v := range in.Data {
+		out.Data[k] = math.Floor(v)
 	}
 	return out
 }
@@ -179,8 +179,8 @@ func Ceil(out, in *NArray) *NArray {
 	if out == nil {
 		out = New(in.Shape...)
 	}
-	for k := range in.Data {
-		out.Data[k] = math.Ceil(in.Data[k])
+	for k, v := range in.Data {
+		out.Data[k] = math.Ceil(v)
 	}
 	return out
 }
@@ -191,8 +191,8 @@ func Trunc(out, in *NArray) *NArray {
 	if out == nil {
 		out = New(in.Shape...)
 	}
-	for k := range in.Data {
-		out.Data[k] = math.Trunc(in.Data[k])
+	for k, v := range in.Data {
+		out.Data[k] = math.Trunc(v)
 	}
 	return out
 }
@@ -203,8 +203,8 @@ func Gamma(out, in *NArray) *NArray {
 	if out == nil {
 		out = New(in.Shape...)
 	}
-	for k := range in.Data {
-		out.Data[k] = math.Gamma(in.Data[k])
+	for k, v := range in.Data {
+		out.Data[k] = math.Gamma(v)
 	}
 	return out
 }
@@ -215,8 +215,8 @@ func J0(out, in *NArray) *NArray {
 	if out == nil {
 		out = New(in.Shape...)
 	}
-	for k := range in.Data {
-		out.Data[k] = math.J0(in.Data[k])
+	for k, v := range in.Data {
+		out.Data[k] = math.J0(v)
 	}
 	return out
 }
@@ -227,8 +227,8 @@ func Y0(out, in *NArray) *NArray {
 	if out == nil {
 		out = New(in.Shape...)
 	}
-	for k := range in.Data {
-		out.Data[k] = math.Y0(in.Data[k])
+	for k, v := range in.Data {
+		out.Data[k] = math.Y0(v)
 	}
 	return out
 }
@@ -239,8 +239,8 @@ func J1(out, in *NArray) *NArray {
 	if out == nil {
 		out = New(in.Shape...)
 	}
-	for k := range in.Data {
-		out.Data[k] = math.J1(in.Data[k])
+	for k, v := range in.Data {
+		out.Data[k] = math.J1(v)
 	}
 	return out
 }
@@ -251,8 +251,8 @@ func Y1(out, in *NArray) *NArray {
 	if out == nil {
 		out = New(in.Shape...)
 	}
-	for k := range in.Data {
-		out.Data[k] = math.Y1(in.Data[k])
+	for k, v := range in.Data {
+		out.Data[k] = math.Y1(v)
 	}
 	return out
 }
@@ -263,8 +263,8 @@ func Log(out, in *NArray) *NArray {
 	if out == nil {
 		out = New(in.Shape...)
 	}
-	for k := range in.Data {
-		out.Data[k] = math.Log(in.Data[k])
+	for k, v := range in.Data {
+		out.Data[k] = math.Log(v)
 	}
 	return out
 }
@@ -275,8 +275,8 @@ func Log10(out, in *NArray) *NArray {
 	if out == nil {
 		out = New(in.Shape...)
 	}
-	for k := range in.Data {
-		out.Data[k] = math.Log10(in.Data[k])
+	for k, v := range in.Data {
+		out.Data[k] = math.Log10(v)
 	}
 	return out
 }
@@ -287,8 +287,8 @@ func Log2(out, in *NArray) *NArray {
 	if out == nil {
 		out = New(in.Shape...)
 	}
-	for k := range in.Data {
-		out.Data[k] = math.Log2(in.Data[k])
+	for k, v := range in.Data {
+		out.Data[k] = math.Log2(v)
 	}
 	return out
 }
@@ -299,8 +299,8 @@ func Log1p(out, in *NArray) *NArray {
 	if out == nil {
 		out = New(in.Shape...)
 	}
-	for k := range in.Data {
-		out.Data[k] = math.Log1p(in.Data[k])
+	for k, v := range in.Data {
+		out.Data[k] = math.Log1p(v)
 	}
 	return out
 }
@@ -311,8 +311,8 @@ func Logb(out, in *NArray) *NArray {
 	if out == nil {
 		out = New(in.Shape...)
 	}
-	for k := range in.Data {
-		out.Data[k] = math.Logb(in.Data[k])
+	for k, v := range in.Data {
+		out.Data[k] = math.Logb(v)
 	}
 	return out
 }
@@ -323,8 +323,8 @@ func Cos(out, in *NArray) *NArray {
 	if out == nil {
 		out = New(in.Shape...)
 	}
-	for k := range in.Data {
-		out.Data[k] = math.Cos(in.Data[k])
+	for k, v := range in.Data {
+		out.Data[k] = math.Cos(v)
 	}
 	return out
 }
@@ -335,8 +335,8 @@ func Sin(out, in *NArray) *NArray {
 	if out == nil {
 		out = New(in.Shape...)
 	}
-	for k := range in.Data {
-		out.Data[k] = math.Sin(in.Data[k])
+	for k, v := range in.Data {
+		out.Data[k] = math.Sin(v)
 	}
 	return out
 }
@@ -347,8 +347,8 @@ func Sinh(out, in *NArray) *NArray {
 	if out == nil {
 		out = New(in.Shape...)
 	}
-	for k := range in.Data {
-		out.Data[k] = math.Sinh(in.Data[k])
+	for k, v := range in.Data {
+		out.Data[k] = math.Sinh(v)
 	}
 	return out
 }
@@ -359,8 +359,8 @@ func Cosh(out, in *NArray) *NArray {
 	if out == nil {
 		out = New(in.Shape...)
 	}
-	for k := range in.Data {
-		out.Data[k] = math.Cosh(in.Data[k])
+	for k, v := range in.Data {
+		out.Data[k] = math.Cosh(v)
 	}
 	return out
 }
@@ -371,8 +371,8 @@ func Sqrt(out, in *NArray) *NArray {
 	if out == nil {
 		out = New(in.Shape...)
 	}
-	for k := range in.Data {
-		out.Data[k] = math.Sqrt(in.Data[k])
+	for k, v := range in.Data {
+		out.Data[k] = math.Sqrt(v)
 	}
 	return out
 }
@@ -383,8 +383,8 @@ func Tan(out, in *NArray) *NArray {
 	if out == nil {
 		out = New(in.Shape...)
 	}
-	for k := range in.Data {
-		out.Data[k] = math.Tan(in.Data[k])
+	for k, v := range in.Data {
+		out.Data[k] = math.Tan(v)
 	}
 	return out
 }
@@ -395,8 +395,8 @@ func Tanh(out, in *NArray) *NArray {
 	if out == nil {
 		out = New(in.Shape...)
 	}
-	for k := range in.Data {
-		out.Data[k] = math.Tanh(in.Data[k])
+	for k, v := range in.Data {
+		out.Data[k] = math.Tanh(v)
 	}
 	return out
 }
