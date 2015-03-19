@@ -307,7 +307,7 @@ func Scale(out *NArray, in *NArray, c float64) *NArray {
 // Max returns the max value in the narray.
 func (na *NArray) Max() float64 {
 
-	max := math.SmallestNonzeroFloat64
+	max := -math.MaxFloat64
 	for i := 0; i < len(na.Data); i++ {
 		if na.Data[i] > max {
 			max = na.Data[i]
@@ -320,7 +320,7 @@ func (na *NArray) Max() float64 {
 func (na *NArray) MaxIdx() (float64, []int) {
 
 	var offset int
-	max := math.SmallestNonzeroFloat64
+	max := -math.MaxFloat64
 	for i := 0; i < len(na.Data); i++ {
 		if na.Data[i] > max {
 			max = na.Data[i]
