@@ -360,8 +360,8 @@ func (na *NArray) MinIdx() (float64, []int) {
 func (na *NArray) Prod() float64 {
 
 	p := 1.0
-	for i := 0; i < len(na.Data); i++ {
-		p *= na.Data[i]
+	for _, v := range na.Data {
+		p *= v
 	}
 	return p
 }
@@ -370,8 +370,8 @@ func (na *NArray) Prod() float64 {
 func (na *NArray) Sum() float64 {
 
 	p := 0.0
-	for i := 0; i < len(na.Data); i++ {
-		p += na.Data[i]
+	for _, v := range na.Data {
+		p += v
 	}
 	return p
 }
@@ -379,7 +379,7 @@ func (na *NArray) Sum() float64 {
 // SetValue sets all elements to value.
 func (na *NArray) SetValue(v float64) *NArray {
 
-	for i := 0; i < len(na.Data); i++ {
+	for i := range na.Data {
 		na.Data[i] = v
 	}
 	return na

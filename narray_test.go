@@ -451,3 +451,19 @@ func BenchmarkRead(b *testing.B) {
 	}
 	_ = w
 }
+
+func BenchmarkProd(b *testing.B) {
+
+	N := 1000
+	na := New(N)
+	for i := 0; i < N; i++ {
+		na.Data[i] = float64(i)
+	}
+
+	var p float64
+	for i := 0; i < b.N; i++ {
+		p = na.Prod()
+	}
+	_ = p
+
+}
