@@ -304,6 +304,23 @@ func Scale(out *NArray, in *NArray, c float64) *NArray {
 	return out
 }
 
+// Rcp returns reciprocal values of narrays elementwise.
+// out = 1.0 / in
+// If out is nil a new array is created.
+func Rcp(out, in *NArray) *NArray {
+	if out == nil {
+		out = New(in.Shape...)
+	} else {
+		if !EqualShape(out, in) {
+			panic("narrays must have equal shape.")
+		}
+	}
+	for k, v := range in.Data {
+		out.Data[k] = 1.0 / v
+	}
+	return out
+}
+
 // Max returns the max value in the narray.
 func (na *NArray) Max() float64 {
 

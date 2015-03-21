@@ -295,7 +295,6 @@ func TestAdd(t *testing.T) {
 	if !panics(func() { Add(nil, in, in3, in2, in4) }) {
 		t.Errorf("did not panic with shape mismatch")
 	}
-
 }
 
 func TestSub(t *testing.T) {
@@ -430,6 +429,22 @@ func TestMaxElem(t *testing.T) {
 		t.Fatalf("expected %f, got %f", x.At(1, 1), na.At(1, 1))
 	}
 
+}
+
+func TestRcp(t *testing.T) {
+	out := Rcp(nil, x)
+	for i := 0; i < 3; i++ {
+		for j := 0; j < 5; j++ {
+			if out.At(i, j) != 1.0/x.At(i, j) {
+				t.Fatalf("expected %f, got %f", x.At(i, j), out.At(i, j))
+			}
+
+		}
+	}
+	z := New(2)
+	if !panics(func() { Rcp(z, x) }) {
+		t.Errorf("did not panic with shape mismatch")
+	}
 }
 
 func BenchmarkRead(b *testing.B) {
