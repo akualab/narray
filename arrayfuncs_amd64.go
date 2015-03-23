@@ -1,6 +1,6 @@
-package narray
-
 // +build amd64
+
+package narray
 
 // These are function definitions for AMD64 optimized routines,
 // and fallback that can be used for performance testing.

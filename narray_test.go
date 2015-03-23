@@ -134,7 +134,7 @@ func checkVector(t *testing.T, dim, idx int, vec *NArray) {
 		j := int(x / 10)
 		k := int(x - (j * 10))
 		if v != na234.At(i, j, k) {
-			t.Fatalf("vec values dont' match fir index (%d,%d,%d) v:%d, expected:%d", i, j, k, v, na234.At(i, j, k))
+			t.Fatalf("vec values dont' match fir index (%d,%d,%d) v:%f, expected:%f", i, j, k, v, na234.At(i, j, k))
 		}
 	}
 }
