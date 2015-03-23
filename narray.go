@@ -70,6 +70,18 @@ func Norm(r *rand.Rand, mean, sd float64, shape ...int) *NArray {
 	return na
 }
 
+// Rand creates a new n-dimensional array whose
+// elements are set using the rand.Float64 function.
+// Values are pseudo-random numbers in [0.0,1.0).
+func Rand(r *rand.Rand, shape ...int) *NArray {
+
+	na := New(shape...)
+	for i := range na.Data {
+		na.Data[i] = r.Float64()
+	}
+	return na
+}
+
 // At returns the value for indices.
 func (na *NArray) At(indices ...int) float64 {
 
