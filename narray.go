@@ -227,9 +227,7 @@ func Div(out *NArray, in0, in1 *NArray) *NArray {
 	if !EqualShape(out, in0, in1) {
 		panic("narrays must have equal shape.")
 	}
-	for i := 0; i < len(out.Data); i++ {
-		out.Data[i] = in0.Data[i] / in1.Data[i]
-	}
+	divSlice(out.Data, in0.Data, in1.Data)
 	return out
 }
 
@@ -244,9 +242,7 @@ func Mul(out *NArray, in0, in1 *NArray) *NArray {
 	if !EqualShape(out, in0, in1) {
 		panic("narrays must have equal shape.")
 	}
-	for i := 0; i < len(out.Data); i++ {
-		out.Data[i] = in0.Data[i] * in1.Data[i]
-	}
+	mulSliceGo(out.Data, in0.Data, in1.Data)
 	return out
 }
 
@@ -298,9 +294,7 @@ func Scale(out *NArray, in *NArray, c float64) *NArray {
 			panic("narrays must have equal shape.")
 		}
 	}
-	for i := 0; i < len(out.Data); i++ {
-		out.Data[i] = in.Data[i] * c
-	}
+	cmulSliceGo(out.Data, in.Data, c)
 	return out
 }
 
@@ -315,9 +309,7 @@ func Rcp(out, in *NArray) *NArray {
 			panic("narrays must have equal shape.")
 		}
 	}
-	for k, v := range in.Data {
-		out.Data[k] = 1.0 / v
-	}
+	cdivSliceGo(out.Data, in.Data, 1.0)
 	return out
 }
 
