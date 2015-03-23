@@ -298,14 +298,16 @@ func TestAdd(t *testing.T) {
 }
 
 func TestSub(t *testing.T) {
-	out := Sub(nil, y, x)
+	z := Scale(nil, x, -1)
+	out := Add(nil, y, z)
 	if out.At(1, 1) != 2.0 {
 		t.Fatalf("expected 2.0, got %f", out.At(1, 1))
 	}
 }
 
 func TestDiv(t *testing.T) {
-	out := Div(nil, y, x)
+	z := Rcp(nil, x)
+	out := Mul(nil, y, z)
 	if out.At(1, 1) != 4.0/3.0 {
 		t.Fatalf("expected 4/3, got %f", out.At(1, 1))
 	}

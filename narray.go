@@ -173,10 +173,13 @@ func (na *NArray) MinElem(v float64, indices ...int) {
 }
 
 // Add adds narrays elementwise.
+//   out = sum_i(in[i])
+// Will panic if there are not at least two input narrays
+// or if narray shapes don't match.
 // If out is nil a new array is created.
 func Add(out *NArray, in ...*NArray) *NArray {
 
-	if len(in) == 0 {
+	if len(in) < 2 {
 		return nil
 	}
 	if out == nil {
@@ -193,13 +196,15 @@ func Add(out *NArray, in ...*NArray) *NArray {
 	return out
 }
 
-// Sub subtracts narrays elementwise.
-// out = in0 - in1 - in2 - ...
+// Mul multiplies narrays elementwise.
+//   out = prod_i(in[i])
+// Will panic if there are not at least two input narrays
+// or if narray shapes don't match.
 // If out is nil a new array is created.
-func Sub(out *NArray, in ...*NArray) *NArray {
+func Mul(out *NArray, in ...*NArray) *NArray {
 
-	if len(in) == 0 {
-		return nil
+	if len(in) < 2 {
+		panic("not in enough arguments")
 	}
 	if out == nil {
 		out = New(in[0].Shape...)
@@ -207,45 +212,16 @@ func Sub(out *NArray, in ...*NArray) *NArray {
 	if !EqualShape(out, in...) {
 		panic("narrays must have equal shape.")
 	}
+
 	for i := 0; i < len(out.Data); i++ {
-		out.Data[i] = in[0].Data[i]
-		for j := 1; j < len(in); j++ {
-			out.Data[i] -= in[j].Data[i]
+		out.Data[i] = in[0].Data[i] * in[1].Data[i]
+	}
+
+	// Case with more than two arguments.
+	for k := 2; k < len(in); k++ {
+		for i := 0; i < len(out.Data); i++ {
+			out.Data[i] *= in[k].Data[i]
 		}
-	}
-	return out
-}
-
-// Div divides two narrays elementwise.
-// out = in0 / in1
-// If out is nil a new array is created.
-func Div(out *NArray, in0, in1 *NArray) *NArray {
-
-	if out == nil {
-		out = New(in0.Shape...)
-	}
-	if !EqualShape(out, in0, in1) {
-		panic("narrays must have equal shape.")
-	}
-	for i := 0; i < len(out.Data); i++ {
-		out.Data[i] = in0.Data[i] / in1.Data[i]
-	}
-	return out
-}
-
-// Mul multiplies two narrays elementwise.
-// out = in0 * in1
-// If out is nil a new array is created.
-func Mul(out *NArray, in0, in1 *NArray) *NArray {
-
-	if out == nil {
-		out = New(in0.Shape...)
-	}
-	if !EqualShape(out, in0, in1) {
-		panic("narrays must have equal shape.")
-	}
-	for i := 0; i < len(out.Data); i++ {
-		out.Data[i] = in0.Data[i] * in1.Data[i]
 	}
 	return out
 }
