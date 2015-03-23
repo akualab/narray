@@ -21,6 +21,7 @@ package narray
 import (
 	"fmt"
 	"math"
+	"math/rand"
 )
 
 // The NArray object.
@@ -56,6 +57,17 @@ func New(shape ...int) *NArray {
 		Data:    make([]float64, size, size),
 		Strides: strides,
 	}
+}
+
+// Norm creates a new n-dimensional array whose
+// elements are drawn from a Normal probability density function.
+func Norm(r *rand.Rand, mean, sd float64, shape ...int) *NArray {
+
+	na := New(shape...)
+	for i := range na.Data {
+		na.Data[i] = r.NormFloat64()*sd + mean
+	}
+	return na
 }
 
 // At returns the value for indices.
@@ -323,6 +335,36 @@ func (na *NArray) MaxIdx() (float64, []int) {
 	return max, na.ReverseIndex(offset)
 }
 
+// MaxArray compare input narrays and returns an narray containing
+// the element-wise maxima.
+//   out[i,j,k,...] = max(in0[i,j,k,...], in1[i,j,k,...], ...)
+// Will panic if there are not at least two input narray
+// or if narray shapes don't match.
+// If out is nil a new array is created.
+func MaxArray(out *NArray, in ...*NArray) *NArray {
+
+	if len(in) < 2 {
+		panic("not in enough input narrays")
+	}
+	if out == nil {
+		out = New(in[0].Shape...)
+	}
+	if !EqualShape(out, in...) {
+		panic("narrays must have equal shape.")
+	}
+
+	for i := 0; i < len(out.Data); i++ {
+		max := math.Inf(-1)
+		for k := 0; k < len(in); k++ {
+			if in[k].Data[i] > max {
+				max = in[k].Data[i]
+			}
+		}
+		out.Data[i] = max
+	}
+	return out
+}
+
 // Min returns the min value in the narray.
 func (na *NArray) Min() float64 {
 
@@ -347,6 +389,37 @@ func (na *NArray) MinIdx() (float64, []int) {
 		}
 	}
 	return min, na.ReverseIndex(offset)
+}
+
+// MinArray compare input narrays and returns an narray containing
+// the element-wise minima.
+//   out[i,j,k,...] = min(in0[i,j,k,...], in1[i,j,k,...], ...)
+// Will panic if there are not at least two input narray
+// or if narray shapes don't match.
+// If out is nil a new array is created.
+func MinArray(out *NArray, in ...*NArray) *NArray {
+
+	if len(in) < 2 {
+		panic("not in enough input narrays")
+	}
+	if out == nil {
+		out = New(in[0].Shape...)
+	}
+	if !EqualShape(out, in...) {
+		panic("narrays must have equal shape.")
+	}
+
+	for i := 0; i < len(out.Data); i++ {
+		min := math.Inf(1)
+		for k := 0; k < len(in); k++ {
+			if in[k].Data[i] < min {
+				min = in[k].Data[i]
+			}
+		}
+		out.Data[i] = min
+	}
+
+	return out
 }
 
 // Prod returns the products of all the elements in the narray.

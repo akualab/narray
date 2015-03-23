@@ -25,6 +25,7 @@ func panics(fun func()) (b bool) {
 }
 
 var x, y, na234 *NArray
+var randna []*NArray
 
 func TestMain(m *testing.M) {
 
@@ -45,6 +46,13 @@ func TestMain(m *testing.M) {
 				na234.Set(v, i, j, k)
 			}
 		}
+	}
+
+	// create slice of random narrays
+	r := rand.New(rand.NewSource(222))
+	randna = make([]*NArray, 10, 10)
+	for k := range randna {
+		randna[k] = Norm(r, 0.0, 100.0, 2, 3, 4, 5)
 	}
 
 	os.Exit(m.Run())
@@ -431,6 +439,32 @@ func TestMaxElem(t *testing.T) {
 		t.Fatalf("expected %f, got %f", x.At(1, 1), na.At(1, 1))
 	}
 
+}
+
+func TestMaxArray(t *testing.T) {
+
+	out := MaxArray(nil, randna...)
+
+	for k, v := range out.Data {
+		for q, na := range randna {
+			if v < na.Data[k] {
+				t.Fatalf("expected %f > %f in input %d", out.Data[k], na.Data[k], q)
+			}
+		}
+	}
+}
+
+func TestMinArray(t *testing.T) {
+
+	out := MinArray(nil, randna...)
+
+	for k, v := range out.Data {
+		for q, na := range randna {
+			if v > na.Data[k] {
+				t.Fatalf("expected %f > %f in input %d", out.Data[k], na.Data[k], q)
+			}
+		}
+	}
 }
 
 func TestRcp(t *testing.T) {
