@@ -1,13 +1,13 @@
 
 // func divSlice(out []float64, a []float64, b []float64) 
-TEXT    ·divSlice(SB), 7, $0
-    MOVQ    out(FP),SI      // SI: &out
-    MOVQ    out+8(FP),DX    // DX: len(out)
-    MOVQ    a+24(FP),R11    // R11: &a
-    MOVQ    b+48(FP),R9     // R9: &b
-    MOVQ    DX, R10         // R10: len(out)
-    SHRQ    $2, DX          // DX: len(out) / 4
-    ANDQ    $3, R10         // R10: len(out) % 4
+TEXT ·divSlice(SB), 7, $0
+    MOVQ    out+0(FP),SI        // SI: &out
+    MOVQ    out_len+8(FP),DX    // DX: len(out)
+    MOVQ    a+24(FP),R11        // R11: &a
+    MOVQ    b+48(FP),R9         // R9: &b
+    MOVQ    DX, R10             // R10: len(out)
+    SHRQ    $2, DX              // DX: len(out) / 4
+    ANDQ    $3, R10             // R10: len(out) % 4
     CMPQ    DX ,$0
     JEQ     remain_div
 loopback_div:
@@ -43,14 +43,14 @@ done_div:
 
 
 // func mulSlice(out []float64, a []float64, b []float64) 
-TEXT    ·mulSlice(SB), 7, $0
-    MOVQ    out(FP),SI      // SI: &out
-    MOVQ    out+8(FP),DX    // DX: len(out)
-    MOVQ    a+24(FP),R11    // R11: &a
-    MOVQ    b+48(FP),R9     // R9: &b
-    MOVQ    DX, R10         // R10: len(out)
-    SHRQ    $2, DX          // DX: len(out) / 4
-    ANDQ    $3, R10         // R10: len(out) % 4
+TEXT ·mulSlice(SB), 7, $0
+    MOVQ    out(FP),SI          // SI: &out
+    MOVQ    out_len+8(FP),DX    // DX: len(out)
+    MOVQ    a+24(FP),R11        // R11: &a
+    MOVQ    b+48(FP),R9         // R9: &b
+    MOVQ    DX, R10             // R10: len(out)
+    SHRQ    $2, DX              // DX: len(out) / 4
+    ANDQ    $3, R10             // R10: len(out) % 4
     CMPQ    DX ,$0
     JEQ     remain_mul
 loopback_mul:
@@ -85,14 +85,14 @@ done_mul:
 
 
 // func cdivSlice(out []float64, a []float64, c float64) 
-TEXT    ·cdivSlice(SB), 7, $0
-    MOVQ    out(FP),SI      // SI: &out
-    MOVQ    out+8(FP),DX    // DX: len(out)
-    MOVQ    a+24(FP),R11    // R11: &a
-    MOVSD   b+48(FP),X4     // X4: c
-    MOVQ    DX, R10         // R10: len(out)
-    SHRQ    $2, DX          // DX: len(out) / 4
-    ANDQ    $3, R10         // R10: len(out) % 4
+TEXT ·cdivSlice(SB), 7, $0
+    MOVQ    out(FP),SI          // SI: &out
+    MOVQ    out_len+8(FP),DX    // DX: len(out)
+    MOVQ    a+24(FP),R11        // R11: &a
+    MOVSD   c+48(FP),X4         // X4: c
+    MOVQ    DX, R10             // R10: len(out)
+    SHRQ    $2, DX              // DX: len(out) / 4
+    ANDQ    $3, R10             // R10: len(out) % 4
     CMPQ    DX ,$0
     JEQ     remain_cdiv
     UNPCKLPD X4, X4
@@ -126,14 +126,14 @@ done_cdiv:
 
 
 // func cmulSlice(out []float64, a []float64, c float64) 
-TEXT    ·cmulSlice(SB), 7, $0
-    MOVQ    out(FP),SI      // SI: &out
-    MOVQ    out+8(FP),DX    // DX: len(out)
-    MOVQ    a+24(FP),R11    // R11: &a
-    MOVSD   b+48(FP),X4     // X4: c
-    MOVQ    DX, R10         // R10: len(out)
-    SHRQ    $2, DX          // DX: len(out) / 4
-    ANDQ    $3, R10         // R10: len(out) % 4
+TEXT ·cmulSlice(SB), 7, $0
+    MOVQ    out(FP),SI          // SI: &out
+    MOVQ    out_len+8(FP),DX    // DX: len(out)
+    MOVQ    a+24(FP),R11        // R11: &a
+    MOVSD   c+48(FP),X4         // X4: c
+    MOVQ    DX, R10             // R10: len(out)
+    SHRQ    $2, DX              // DX: len(out) / 4
+    ANDQ    $3, R10             // R10: len(out) % 4
     CMPQ    DX ,$0
     JEQ     remain_cmul
     UNPCKLPD X4, X4
