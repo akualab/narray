@@ -298,8 +298,8 @@ func Scale(out *NArray, in *NArray, c float64) *NArray {
 			panic("narrays must have equal shape.")
 		}
 	}
-	for i := 0; i < len(out.Data); i++ {
-		out.Data[i] = in.Data[i] * c
+	for i, v := range in.Data {
+		out.Data[i] = v * c
 	}
 	return out
 }
