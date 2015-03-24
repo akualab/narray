@@ -360,37 +360,80 @@ done_sqrt:
 
 
 // func minSliceElement(a []float64) float64
-// TODO(klauspost): Unroll for more speed
 TEXT ·minSliceElement(SB), 7, $0
     MOVQ    a(FP),SI          // SI: &a
     MOVQ    a_len+8(FP),DX    // DX: len(a)
-    MOVSD   (SI), X0
-next_min_e:
+    MOVSD   (SI), X0          // Initial value
     ADDQ    $8, SI
     SUBQ    $1, DX
-    JZ done_min_e
-    MOVSD   (SI), X1
-    MINSD   X1, X0
-    JMP next_min_e
-done_min_e:
+
+    UNPCKLPD X0, X0
+    MOVQ    DX, R10             // R10: len(out) -1
+    SHRQ    $2, DX              // DX: (len(out) - 1) / 4
+    ANDQ    $3, R10             // R10: (len(out) -1 ) % 4
+    MOVAPD  X0, X1
+    CMPQ    DX ,$0
+    JEQ     remain_min_e
+next_min_e:
+    MOVUPD  (SI), X2
+    MOVUPD  16(SI), X3
+    MINPD   X2, X0
+    MINPD   X3, X1
+    ADDQ    $32, SI
+    SUBQ    $1, DX
+    JNZ next_min_e
+    CMPQ    R10, $0
+    JZ      done_min_e
+remain_min_e:
+    MOVSD   (SI), X2
+    MINSD   X2, X0
+    ADDQ    $8, SI
+    SUBQ    $1, R10
+    JNZ     remain_min_e
+done_min_e:    
+    MINPD   X1, X0
+    MOVAPD  X0, X2
+    UNPCKHPD X0, X2
+    MINSD   X2, X0
     MOVSD X0, ret+24(FP)
     RET ,
 
 
 // func maxSliceElement(a []float64) float64
-// TODO(klauspost): Unroll for more speed
 TEXT ·maxSliceElement(SB), 7, $0
     MOVQ    a(FP),SI          // SI: &a
     MOVQ    a_len+8(FP),DX    // DX: len(a)
-    MOVSD   (SI), X0
-next_max_e:
+    MOVSD   (SI), X0          // Initial value
     ADDQ    $8, SI
     SUBQ    $1, DX
-    JZ done_max_e
-    MOVSD   (SI), X1
-    MAXSD   X1, X0
-    JMP next_max_e
-done_max_e:
+
+    UNPCKLPD X0, X0
+    MOVQ    DX, R10             // R10: len(out) -1
+    SHRQ    $2, DX              // DX: (len(out) - 1) / 4
+    ANDQ    $3, R10             // R10: (len(out) -1 ) % 4
+    MOVAPD  X0, X1
+    CMPQ    DX ,$0
+    JEQ     remain_max_e
+next_max_e:
+    MOVUPD  (SI), X2
+    MOVUPD  16(SI), X3
+    MAXPD   X2, X0
+    MAXPD   X3, X1
+    ADDQ    $32, SI
+    SUBQ    $1, DX
+    JNZ next_max_e
+    CMPQ    R10, $0
+    JZ      done_max_e
+remain_max_e:
+    MOVSD   (SI), X2
+    MAXSD   X2, X0
+    ADDQ    $8, SI
+    SUBQ    $1, R10
+    JNZ     remain_max_e
+done_max_e:    
+    MAXPD   X1, X0
+    MOVAPD  X0, X2
+    UNPCKHPD X0, X2
+    MAXSD   X2, X0
     MOVSD X0, ret+24(FP)
     RET ,
-
