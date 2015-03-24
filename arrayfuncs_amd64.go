@@ -97,7 +97,7 @@ func sqrtSliceGo(out, a []float64) {
 	}
 }
 
-// approx 1.5x faster than Go
+// approx 6x faster than Go
 func minSliceElement(a []float64) float64
 
 func minSliceElementGo(a []float64) float64 {
@@ -110,7 +110,7 @@ func minSliceElementGo(a []float64) float64 {
 	return min
 }
 
-// approx 1.5x faster than Go
+// approx 6x faster than Go
 func maxSliceElement(a []float64) float64
 
 func maxSliceElementGo(a []float64) float64 {
@@ -121,4 +121,15 @@ func maxSliceElementGo(a []float64) float64 {
 		}
 	}
 	return max
+}
+
+// approx 4x faster than Go
+func sliceSum(a []float64) float64
+
+func sliceSumGo(a []float64) float64 {
+	sum := 0.0
+	for _, v := range a {
+		sum += v
+	}
+	return sum
 }

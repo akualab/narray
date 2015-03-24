@@ -437,3 +437,41 @@ done_max_e:
     MAXSD   X2, X0
     MOVSD X0, ret+24(FP)
     RET ,
+
+
+
+// func sliceSum(a []float64) float64
+TEXT ·sliceSum(SB), 7, $0
+    MOVQ    a(FP),SI          // SI: &a
+    MOVQ    a_len+8(FP),DX    // DX: len(a)
+    XORPD   X0, X0            // Initial value
+    XORPD   X1, X1            // Initial value
+
+    MOVQ    DX, R10             // R10: len(out) -1
+    SHRQ    $2, DX              // DX: (len(out) - 1) / 4
+    ANDQ    $3, R10             // R10: (len(out) -1 ) % 4
+    CMPQ    DX ,$0
+    JEQ     remain_sum
+next_sum:
+    MOVUPD  (SI), X2
+    MOVUPD  16(SI), X3
+    ADDPD   X2, X0
+    ADDPD   X3, X1
+    ADDQ    $32, SI
+    SUBQ    $1, DX
+    JNZ     next_sum
+    CMPQ    R10, $0
+    JZ      done_sum
+remain_sum:
+    MOVSD   (SI), X2
+    ADDSD   X2, X0
+    ADDQ    $8, SI
+    SUBQ    $1, R10
+    JNZ     remain_sum
+done_sum:    
+    ADDPD   X1, X0
+    MOVAPD  X0, X2
+    UNPCKHPD X0, X2
+    ADDSD   X2, X0
+    MOVSD   X0, ret+24(FP)
+    RET ,
