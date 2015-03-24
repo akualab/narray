@@ -305,6 +305,19 @@ func TestAdd(t *testing.T) {
 	}
 }
 
+func TestAddScaled(t *testing.T) {
+
+	out := randna[0].Copy()
+	AddScaled(out, randna[1], 2.0)
+
+	for k, v := range out.Data {
+		w := randna[0].Data[k] + randna[1].Data[k]*2.0
+		if v != w {
+			t.Fatalf("expected %f, got %f for index %d", v, w, k)
+		}
+	}
+}
+
 func TestSub(t *testing.T) {
 	z := Scale(nil, x, -1)
 	out := Add(nil, y, z)
