@@ -135,9 +135,19 @@ func maxSliceElement(a []float64) float64 {
 // a != nil
 // len(a) >= 0
 func sliceSum(a []float64) float64 {
-	sum := 0
+	sum := 0.0
 	for _, v := range a {
 		sum += v
 	}
 	return sum
+}
+
+// absSlice will return math.Abs(values) of the array
+// Assumptions the assembly can make:
+// out != nil, a != nil
+// len(out)  == len(a)
+func absSliceGo(out, a []float64) {
+	for i, v := range a {
+		out[i] = math.Abs(v)
+	}
 }
