@@ -212,11 +212,14 @@ func Add(out *NArray, in ...*NArray) *NArray {
 	if !EqualShape(out, in...) {
 		panic("narrays must have equal shape.")
 	}
-	for i := 0; i < len(out.Data); i++ {
-		for _, a := range in {
-			out.Data[i] += a.Data[i]
-		}
+
+	addSlice(out.Data, in[0].Data, in[1].Data)
+
+	// Multiply each following, if more than two arguments.
+	for k := 2; k < len(in); k++ {
+		addSlice(out.Data, out.Data, in[k].Data)
 	}
+
 	return out
 }
 
@@ -237,15 +240,11 @@ func Mul(out *NArray, in ...*NArray) *NArray {
 		panic("narrays must have equal shape.")
 	}
 
-	for i := 0; i < len(out.Data); i++ {
-		out.Data[i] = in[0].Data[i] * in[1].Data[i]
-	}
+	mulSlice(out.Data, in[0].Data, in[1].Data)
 
-	// Case with more than two arguments.
+	// Multiply each following, if more than two arguments.
 	for k := 2; k < len(in); k++ {
-		for i := 0; i < len(out.Data); i++ {
-			out.Data[i] *= in[k].Data[i]
-		}
+		mulSlice(out.Data, out.Data, in[k].Data)
 	}
 	return out
 }
@@ -262,9 +261,7 @@ func AddConst(out *NArray, in *NArray, c float64) *NArray {
 			panic("narrays must have equal shape.")
 		}
 	}
-	for i := 0; i < len(out.Data); i++ {
-		out.Data[i] = in.Data[i] + c
-	}
+	caddSlice(out.Data, in.Data, c)
 	return out
 }
 
@@ -298,9 +295,7 @@ func Scale(out *NArray, in *NArray, c float64) *NArray {
 			panic("narrays must have equal shape.")
 		}
 	}
-	for i := 0; i < len(out.Data); i++ {
-		out.Data[i] = in.Data[i] * c
-	}
+	cmulSlice(out.Data, in.Data, c)
 	return out
 }
 
@@ -315,22 +310,32 @@ func Rcp(out, in *NArray) *NArray {
 			panic("narrays must have equal shape.")
 		}
 	}
-	for k, v := range in.Data {
-		out.Data[k] = 1.0 / v
+	cdivSlice(out.Data, in.Data, 1.0)
+	return out
+}
+
+// Sq returns square root values of narrays elementwise.
+// out = math.Sqrt(in)
+// If out is nil a new array is created.
+// TODO(klauspost): Remove generated function and rename this.
+func Sq(out, in *NArray) *NArray {
+	if out == nil {
+		out = New(in.Shape...)
+	} else {
+		if !EqualShape(out, in) {
+			panic("narrays must have equal shape.")
+		}
 	}
+	sqrtSlice(out.Data, in.Data)
 	return out
 }
 
 // Max returns the max value in the narray.
 func (na *NArray) Max() float64 {
-
-	max := -math.MaxFloat64
-	for i := 0; i < len(na.Data); i++ {
-		if na.Data[i] > max {
-			max = na.Data[i]
-		}
+	if na == nil || len(na.Data) == 0 {
+		panic("unable to take max of nil or zero-sizes array")
 	}
-	return max
+	return maxSliceElement(na.Data)
 }
 
 // MaxIdx returns the max value and corresponding indices.
@@ -365,28 +370,21 @@ func MaxArray(out *NArray, in ...*NArray) *NArray {
 		panic("narrays must have equal shape.")
 	}
 
-	for i := 0; i < len(out.Data); i++ {
-		max := math.Inf(-1)
-		for k := 0; k < len(in); k++ {
-			if in[k].Data[i] > max {
-				max = in[k].Data[i]
-			}
-		}
-		out.Data[i] = max
+	maxSlice(out.Data, in[0].Data, in[1].Data)
+
+	// Also add each following, if more than two arguments.
+	for k := 2; k < len(in); k++ {
+		maxSlice(out.Data, out.Data, in[k].Data)
 	}
 	return out
 }
 
 // Min returns the min value in the narray.
 func (na *NArray) Min() float64 {
-
-	min := math.MaxFloat64
-	for i := 0; i < len(na.Data); i++ {
-		if na.Data[i] < min {
-			min = na.Data[i]
-		}
+	if na == nil || len(na.Data) == 0 {
+		panic("unable to take min of nil or zero-sizes array")
 	}
-	return min
+	return minSliceElementGo(na.Data)
 }
 
 // MinIdx returns the min value and corresponding indices.
@@ -421,14 +419,11 @@ func MinArray(out *NArray, in ...*NArray) *NArray {
 		panic("narrays must have equal shape.")
 	}
 
-	for i := 0; i < len(out.Data); i++ {
-		min := math.Inf(1)
-		for k := 0; k < len(in); k++ {
-			if in[k].Data[i] < min {
-				min = in[k].Data[i]
-			}
-		}
-		out.Data[i] = min
+	minSlice(out.Data, in[0].Data, in[1].Data)
+
+	// Also add each following, if more than two arguments.
+	for k := 2; k < len(in); k++ {
+		minSlice(out.Data, out.Data, in[k].Data)
 	}
 
 	return out

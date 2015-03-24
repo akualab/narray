@@ -519,7 +519,7 @@ func BenchmarkProd(b *testing.B) {
 
 }
 
-func BenchmarkDiv10001(b *testing.B) {
+func BenchmarkAdd10001(b *testing.B) {
 	N := 10001
 	na := New(N)
 	nb := New(N)
@@ -532,7 +532,7 @@ func BenchmarkDiv10001(b *testing.B) {
 	b.ResetTimer()
 	b.SetBytes(int64(N * 8))
 	for i := 0; i < b.N; i++ {
-		dst = Div(dst, na, nb)
+		dst = Add(dst, na, nb)
 	}
 }
 
@@ -553,6 +553,68 @@ func BenchmarkMul10001(b *testing.B) {
 	}
 }
 
+func BenchmarkMin10001(b *testing.B) {
+	N := 10001
+	na := New(N)
+	nb := New(N)
+	dst := New(N)
+	for i := 0; i < N; i++ {
+		na.Data[i] = float64(i)
+		nb.Data[i] = float64(i) * 0.5
+	}
+
+	b.ResetTimer()
+	b.SetBytes(int64(N * 8))
+	for i := 0; i < b.N; i++ {
+		dst = MinArray(dst, na, nb)
+	}
+}
+
+func BenchmarkMax10001(b *testing.B) {
+	N := 10001
+	na := New(N)
+	nb := New(N)
+	dst := New(N)
+	for i := 0; i < N; i++ {
+		na.Data[i] = float64(i)
+		nb.Data[i] = float64(i) * 0.5
+	}
+
+	b.ResetTimer()
+	b.SetBytes(int64(N * 8))
+	for i := 0; i < b.N; i++ {
+		dst = MaxArray(dst, na, nb)
+	}
+}
+
+func BenchmarkMinValue10001(b *testing.B) {
+	N := 10001
+	na := New(N)
+	for i := 0; i < N; i++ {
+		na.Data[i] = float64(i)
+	}
+
+	b.ResetTimer()
+	b.SetBytes(int64(N * 8))
+	for i := 0; i < b.N; i++ {
+		_ = na.Min()
+	}
+}
+
+func BenchmarkMaxValue10001(b *testing.B) {
+	N := 10001
+	na := New(N)
+	for i := 0; i < N; i++ {
+		na.Data[i] = float64(i)
+	}
+
+	b.ResetTimer()
+	b.SetBytes(int64(N * 8))
+	for i := 0; i < b.N; i++ {
+		_ = na.Max()
+	}
+}
+
 func BenchmarkRcp10001(b *testing.B) {
 	N := 10001
 	na := New(N)
@@ -568,6 +630,21 @@ func BenchmarkRcp10001(b *testing.B) {
 	}
 }
 
+func BenchmarkSqrt10001(b *testing.B) {
+	N := 10001
+	na := New(N)
+	dst := New(N)
+	for i := 0; i < N; i++ {
+		na.Data[i] = float64(i)
+	}
+
+	b.ResetTimer()
+	b.SetBytes(int64(N * 8))
+	for i := 0; i < b.N; i++ {
+		dst = Sq(dst, na)
+	}
+}
+
 func BenchmarkScale10001(b *testing.B) {
 	N := 10001
 	na := New(N)
@@ -580,5 +657,20 @@ func BenchmarkScale10001(b *testing.B) {
 	b.SetBytes(int64(N * 8))
 	for i := 0; i < b.N; i++ {
 		dst = Scale(dst, na, 20.0)
+	}
+}
+
+func BenchmarkConstAdd10001(b *testing.B) {
+	N := 10001
+	na := New(N)
+	dst := New(N)
+	for i := 0; i < N; i++ {
+		na.Data[i] = float64(i)
+	}
+
+	b.ResetTimer()
+	b.SetBytes(int64(N * 8))
+	for i := 0; i < b.N; i++ {
+		dst = AddConst(dst, na, 20.0)
 	}
 }

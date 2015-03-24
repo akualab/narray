@@ -2,6 +2,8 @@
 
 package narray
 
+import "math"
+
 // These are function definitions for AMD64 optimized routines,
 // and fallback that can be used for performance testing.
 // See function documentation in arrayfuncs.go
@@ -16,11 +18,46 @@ func divSliceGo(out, a, b []float64) {
 }
 
 // approx 3x faster than Go
+func addSlice(out, a, b []float64)
+
+func addSliceGo(out, a, b []float64) {
+	for i := 0; i < len(out); i++ {
+		out[i] = a[i] + b[i]
+	}
+}
+
+// approx 3x faster than Go
 func mulSlice(out, a, b []float64)
 
 func mulSliceGo(out, a, b []float64) {
 	for i := 0; i < len(out); i++ {
 		out[i] = a[i] * b[i]
+	}
+}
+
+// approx 4x faster than Go
+func minSlice(out, a, b []float64)
+
+func minSliceGo(out, a, b []float64) {
+	for i := 0; i < len(out); i++ {
+		if a[i] < b[i] {
+			out[i] = a[i]
+		} else {
+			out[i] = b[i]
+		}
+	}
+}
+
+// approx 4x faster than Go
+func maxSlice(out, a, b []float64)
+
+func maxSliceGo(out, a, b []float64) {
+	for i := 0; i < len(out); i++ {
+		if a[i] > b[i] {
+			out[i] = a[i]
+		} else {
+			out[i] = b[i]
+		}
 	}
 }
 
@@ -40,4 +77,48 @@ func cmulSliceGo(out, a []float64, c float64) {
 	for i := 0; i < len(out); i++ {
 		out[i] = c * a[i]
 	}
+}
+
+// approx 3x faster than Go
+func caddSlice(out, a []float64, c float64)
+
+func caddSliceGo(out, a []float64, c float64) {
+	for i := 0; i < len(out); i++ {
+		out[i] = c * a[i]
+	}
+}
+
+// approx 2x faster than Go
+func sqrtSlice(out, a []float64)
+
+func sqrtSliceGo(out, a []float64) {
+	for i := 0; i < len(out); i++ {
+		out[i] = math.Sqrt(a[i])
+	}
+}
+
+// approx 1.5x faster than Go
+func minSliceElement(a []float64) float64
+
+func minSliceElementGo(a []float64) float64 {
+	min := math.MaxFloat64
+	for i := 0; i < len(a); i++ {
+		if a[i] < min {
+			min = a[i]
+		}
+	}
+	return min
+}
+
+// approx 1.5x faster than Go
+func maxSliceElement(a []float64) float64
+
+func maxSliceElementGo(a []float64) float64 {
+	max := -math.MaxFloat64
+	for i := 0; i < len(a); i++ {
+		if a[i] > max {
+			max = a[i]
+		}
+	}
+	return max
 }
