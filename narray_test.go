@@ -305,6 +305,18 @@ func TestAdd(t *testing.T) {
 	}
 }
 
+func TestAddConst(t *testing.T) {
+
+	out := AddConst(nil, randna[0], 2.0)
+
+	for k, v := range out.Data {
+		w := randna[0].Data[k] + 2.0
+		if v != w {
+			t.Fatalf("expected %f, got %f for index %d", v, w, k)
+		}
+	}
+}
+
 func TestAddScaled(t *testing.T) {
 
 	out := randna[0].Copy()
