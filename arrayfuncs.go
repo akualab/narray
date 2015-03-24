@@ -129,3 +129,15 @@ func maxSliceElement(a []float64) float64 {
 	}
 	return max
 }
+
+// sliceSum will return the sum of all elements of the slice
+// Assumptions the assembly can make:
+// a != nil
+// len(a) >= 0
+func sliceSum(a []float64) float64 {
+	sum := 0
+	for _, v := range a {
+		sum += v
+	}
+	return sum
+}

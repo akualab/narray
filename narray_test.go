@@ -640,6 +640,20 @@ func BenchmarkMaxValue10001(b *testing.B) {
 	}
 }
 
+func BenchmarkSum10001(b *testing.B) {
+	N := 10001
+	na := New(N)
+	for i := 0; i < N; i++ {
+		na.Data[i] = float64(i)
+	}
+
+	b.ResetTimer()
+	b.SetBytes(int64(N * 8))
+	for i := 0; i < b.N; i++ {
+		_ = na.Sum()
+	}
+}
+
 func BenchmarkRcp10001(b *testing.B) {
 	N := 10001
 	na := New(N)

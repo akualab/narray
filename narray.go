@@ -441,12 +441,7 @@ func (na *NArray) Prod() float64 {
 
 // Sum returns the sum of all the elements in the narray.
 func (na *NArray) Sum() float64 {
-
-	p := 0.0
-	for _, v := range na.Data {
-		p += v
-	}
-	return p
+	return sliceSum(na.Data)
 }
 
 // SetValue sets all elements to value.
