@@ -384,7 +384,7 @@ func (na *NArray) Min() float64 {
 	if na == nil || len(na.Data) == 0 {
 		panic("unable to take min of nil or zero-sizes array")
 	}
-	return minSliceElementGo(na.Data)
+	return minSliceElement(na.Data)
 }
 
 // MinIdx returns the min value and corresponding indices.
