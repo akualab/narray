@@ -97,6 +97,15 @@ func sqrtSliceGo(out, a []float64) {
 	}
 }
 
+// approx 12x faster than Go
+func absSlice(out, a []float64)
+
+func absSliceGo(out, a []float64) {
+	for i, v := range a {
+		out[i] = math.Abs(v)
+	}
+}
+
 // approx 6x faster than Go
 func minSliceElement(a []float64) float64
 

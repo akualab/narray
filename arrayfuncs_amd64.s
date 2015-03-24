@@ -358,6 +358,46 @@ onemore_sqrt:
 done_sqrt:  
     RET ,
 
+// func absSlice(out []float64, a []float64) 
+TEXT ·absSlice(SB), 7, $0
+    MOVQ    out(FP),SI          // SI: &out
+    MOVQ    out_len+8(FP),DX    // DX: len(out)
+    MOVQ    a+24(FP),R11        // R11: &a
+    MOVQ    $(1<<63), BX
+    MOVQ    BX, X5             // X1: Sign
+    UNPCKLPD X5, X5
+    MOVQ    DX, R10             // R10: len(out)
+    SHRQ    $2, DX              // DX: len(out) / 4
+    ANDQ    $3, R10             // R10: len(out) % 4
+    CMPQ    DX ,$0
+    JEQ     remain_abs
+loopback_abs:
+    MOVAPD  X5, X3
+    MOVAPD  X5, X4
+    MOVUPD  (R11),X0
+    ANDNPD  X0, X3
+    MOVUPD  16(R11),X1
+    ANDNPD  X1, X4
+    MOVUPD  X3,(SI)
+    MOVUPD  X4,16(SI)
+    ADDQ    $32, R11
+    ADDQ    $32, SI
+    SUBQ    $1,DX
+    JNZ     loopback_abs
+remain_abs:
+    CMPQ    R10,$0
+    JEQ     done_abs
+onemore_abs:
+    MOVAPS  X5, X1 
+    MOVSD   (R11),X0
+    ANDNPD  X0, X1
+    MOVSD   X1,(SI)
+    ADDQ    $8, R11
+    ADDQ    $8, SI
+    SUBQ    $1, R10
+    JNZ     onemore_abs
+done_abs:  
+    RET ,
 
 // func minSliceElement(a []float64) float64
 TEXT ·minSliceElement(SB), 7, $0

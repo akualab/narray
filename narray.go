@@ -330,6 +330,22 @@ func Sq(out, in *NArray) *NArray {
 	return out
 }
 
+// AbsNew returns square root values of narrays elementwise.
+// out = math.Abs(in)
+// If out is nil a new array is created.
+// TODO(klauspost): Remove generated function and rename this.
+func AbsNew(out, in *NArray) *NArray {
+	if out == nil {
+		out = New(in.Shape...)
+	} else {
+		if !EqualShape(out, in) {
+			panic("narrays must have equal shape.")
+		}
+	}
+	absSlice(out.Data, in.Data)
+	return out
+}
+
 // Max returns the max value in the narray.
 func (na *NArray) Max() float64 {
 	if na == nil || len(na.Data) == 0 {

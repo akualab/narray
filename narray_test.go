@@ -367,6 +367,24 @@ func TestScale(t *testing.T) {
 	}
 }
 
+func TestAbs(t *testing.T) {
+	xx := New(3, 3)
+	xx.Set(-1, 1, 1)
+	xx.Set(2, 1, 2)
+	xx.Set(-3, 2, 2)
+
+	out := AbsNew(nil, xx)
+	if out.At(1, 1) != 1.0 {
+		t.Fatalf("expected 1, got %f", out.At(1, 1))
+	}
+	if out.At(1, 2) != 2 {
+		t.Fatalf("expected 12, got %f", out.At(1, 2))
+	}
+	if out.At(2, 2) != 3 {
+		t.Fatalf("expected 3, got %f", out.At(2, 2))
+	}
+}
+
 func TestReverseIndex(t *testing.T) {
 
 	na := New(7, 3, 2, 14, 1, 7)
@@ -681,6 +699,21 @@ func BenchmarkSqrt10001(b *testing.B) {
 	b.SetBytes(int64(N * 8))
 	for i := 0; i < b.N; i++ {
 		dst = Sq(dst, na)
+	}
+}
+
+func BenchmarkAbs10001(b *testing.B) {
+	N := 10001
+	na := New(N)
+	dst := New(N)
+	for i := 0; i < N; i++ {
+		na.Data[i] = float64(i)
+	}
+
+	b.ResetTimer()
+	b.SetBytes(int64(N * 8))
+	for i := 0; i < b.N; i++ {
+		dst = AbsNew(dst, na)
 	}
 }
 
