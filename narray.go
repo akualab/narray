@@ -19,9 +19,11 @@ The shape is a vector with the size of each dimension. Typical cases:
 package narray
 
 import (
+	"bytes"
 	"fmt"
 	"math"
 	"math/rand"
+	"strconv"
 )
 
 // The NArray object.
@@ -489,9 +491,6 @@ func (na *NArray) Vector(dim, idx int) *NArray {
 	shape := na.Shape[dim]
 	ncopies := vLen / stride
 	inc := shape * stride
-	//fmt.Println("dim: ", dim, "idx: ", idx, "stride: ", stride, "shape: ",
-	//	shape, "vlen: ", vLen, "ncopies: ", ncopies, "inc: ", inc)
-
 	end := 0
 	to := 0
 	start := stride * idx
@@ -538,6 +537,50 @@ func (na *NArray) SubArray(query ...int) *NArray {
 // Reshape returns an narray with a new shape.
 func (na *NArray) Reshape(dim ...int) *NArray {
 	panic("not implemented")
+}
+
+// String prints the narray
+func (na *NArray) String() string {
+
+	return na.Sprint(func(na *NArray, k int) bool {
+		return true
+	})
+}
+
+// Sprint prints narray elements when f returns true.
+// index is the linear index of an narray.
+func (na *NArray) Sprint(f func(na *NArray, index int) bool) string {
+
+	b := bytes.NewBufferString(fmt.Sprintln("narray rank:  ", na.Rank))
+	_, _ = b.WriteString(fmt.Sprintln("narray shape: ", na.Shape))
+	for k, v := range na.Data {
+		idx := na.ReverseIndex(k)
+		if f(na, k) {
+			_, _ = b.WriteString("[")
+			for axis, av := range idx {
+				_, _ = b.WriteString(formatted(av, na.Shape[axis]-1))
+			}
+			_, _ = b.WriteString(fmt.Sprintf("] => %f\n", v))
+		}
+	}
+	return b.String()
+}
+
+func formatted(n, max int) string {
+	b := bytes.NewBufferString(" ")
+	for i := 0; i < nd(max)-nd(n); i++ {
+		_, _ = b.WriteString(" ")
+	}
+	_, _ = b.WriteString(strconv.FormatInt(int64(n), 10))
+	return b.String()
+}
+
+// num digits in number
+func nd(n int) int {
+	if n == 0 {
+		return 1
+	}
+	return int(math.Log10(float64(n))) + 1
 }
 
 func cartesianProduct(s []int) [][]int {

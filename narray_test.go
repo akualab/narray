@@ -52,7 +52,8 @@ func TestMain(m *testing.M) {
 	r := rand.New(rand.NewSource(222))
 	randna = make([]*NArray, 10, 10)
 	for k := range randna {
-		randna[k] = Norm(r, 0.0, 100.0, 2, 3, 4, 5)
+		//		randna[k] = Norm(r, 0.0, 100.0, 2, 3, 4, 5)
+		randna[k] = Norm(r, 0.0, 100.0, 11, 3, 4)
 	}
 
 	os.Exit(m.Run())
@@ -506,6 +507,20 @@ func TestRcp(t *testing.T) {
 	if !panics(func() { Rcp(z, x) }) {
 		t.Errorf("did not panic with shape mismatch")
 	}
+}
+
+func TestString(t *testing.T) {
+
+	s := randna[0].Sprint(func(na *NArray, k int) bool {
+		if na.Data[k] > 80 {
+			return true
+		}
+		return false
+	})
+
+	// TODO: parse string and verify value...not the highest priority...
+
+	t.Log(s)
 }
 
 func BenchmarkRead(b *testing.B) {
