@@ -92,6 +92,17 @@ func caddSlice(out, a []float64, c float64) {
 	}
 }
 
+// addScaledSlice adds a scaled narray elementwise.
+// y = y + a * x
+// Assumptions the assembly can make:
+// y != nil, a != nil
+// len(x)  == len(y)
+func addScaledSlice(y, x []float64, a float64) {
+	for i, v := range x {
+		y[i] += v * a
+	}
+}
+
 // sqrtSlice will return math.Sqrt(values) of the array
 // Assumptions the assembly can make:
 // out != nil, a != nil

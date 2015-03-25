@@ -88,6 +88,15 @@ func caddSliceGo(out, a []float64, c float64) {
 	}
 }
 
+// approx 3x faster than Go
+func addScaledSlice(y, x []float64, a float64)
+
+func addScaledSliceGo(y, x []float64, a float64) {
+	for i, v := range x {
+		y[i] += v * a
+	}
+}
+
 // approx 2x faster than Go
 func sqrtSlice(out, a []float64)
 

@@ -277,9 +277,7 @@ func AddScaled(y *NArray, x *NArray, a float64) *NArray {
 			panic("narrays must have equal shape.")
 		}
 	}
-	for i, v := range x.Data {
-		y.Data[i] += v * a
-	}
+	addScaledSlice(y.Data, x.Data, a)
 	return y
 }
 

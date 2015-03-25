@@ -323,6 +323,50 @@ onemore_cadd:
 done_cadd:  
     RET ,
 
+
+// func addScaledSlice(y []float64, x []float64, a float64) 
+TEXT ·addScaledSlice(SB), 7, $0
+    MOVQ    y(FP),SI            // SI: &y
+    MOVQ    y_len+8(FP),DX      // DX: len(y)
+    MOVQ    x+24(FP),R11        // R11: &x
+    MOVSD   a+48(FP),X4         // X4: a
+    MOVQ    DX, R10             // R10: len(y)
+    SHRQ    $2, DX              // DX: len(y) / 4
+    ANDQ    $3, R10             // R10: len(y) % 4
+    CMPQ    DX ,$0
+    JEQ     remain_madd
+    UNPCKLPD X4, X4
+loopback_madd:
+    MOVUPD  (R11),X0
+    MOVUPD  (SI), X5
+    MULPD   X4, X0
+    ADDPD   X5, X0
+    MOVUPD  16(R11),X2
+    MOVUPD  16(SI), X6
+    MULPD   X4, X2
+    ADDPD   X6, X2
+    MOVUPD  X0,(SI)
+    MOVUPD  X2,16(SI)
+    ADDQ    $32, R11
+    ADDQ    $32, SI
+    SUBQ    $1,DX
+    JNZ     loopback_madd
+remain_madd:
+    CMPQ    R10,$0
+    JEQ     done_madd
+onemore_madd:   
+    MOVSD   (R11),X0
+    MOVSD   (SI),X1
+    MULSD   X4,X0
+    ADDSD   X1,X0
+    MOVSD   X0,(SI)
+    ADDQ    $8, R11
+    ADDQ    $8, SI
+    SUBQ    $1, R10
+    JNZ     onemore_madd
+done_madd:  
+    RET ,
+
 // func sqrtSlice(out []float64, a []float64) 
 TEXT ·sqrtSlice(SB), 7, $0
     MOVQ    out(FP),SI          // SI: &out

@@ -596,6 +596,22 @@ func BenchmarkMul10001(b *testing.B) {
 	}
 }
 
+func BenchmarkAddScaled10001(b *testing.B) {
+	N := 10001
+	na := New(N)
+	nb := New(N)
+	for i := 0; i < N; i++ {
+		na.Data[i] = float64(i)
+		nb.Data[i] = float64(i) * 0.5
+	}
+
+	b.ResetTimer()
+	b.SetBytes(int64(N * 8))
+	for i := 0; i < b.N; i++ {
+		na = AddScaled(na, nb, 1.1)
+	}
+}
+
 func BenchmarkMin10001(b *testing.B) {
 	N := 10001
 	na := New(N)
