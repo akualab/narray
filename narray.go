@@ -20,22 +20,29 @@ package narray
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
+	"io"
+	"io/ioutil"
 	"math"
 	"math/rand"
+	"os"
+	"path/filepath"
 	"strconv"
+
+	"github.com/golang/glog"
 )
 
 // The NArray object.
 type NArray struct {
 	// The rank or order or degree of the narray is the dimensionality required to represent it. (eg. The rank of a vector is 1)
-	Rank int
+	Rank int `json:"rank"`
 	// The shape is an int slice that contains the size of each dimension. Subscripts range from zero to s-1. Where s is the size of a dimension.
-	Shape []int
+	Shape []int `json:"shape"`
 	// The data is stored as a slice of float64 numbers.
-	Data []float64
+	Data []float64 `json:"data"`
 	// Strides for each dimension.
-	Strides []int
+	Strides []int `json:"strides"`
 }
 
 // New creates a new n-dimensional array.
@@ -539,14 +546,6 @@ func (na *NArray) Reshape(dim ...int) *NArray {
 	panic("not implemented")
 }
 
-// String prints the narray
-func (na *NArray) String() string {
-
-	return na.Sprint(func(na *NArray, k int) bool {
-		return true
-	})
-}
-
 // Sprint prints narray elements when f returns true.
 // index is the linear index of an narray.
 func (na *NArray) Sprint(f func(na *NArray, index int) bool) string {
@@ -564,6 +563,108 @@ func (na *NArray) Sprint(f func(na *NArray, index int) bool) string {
 		}
 	}
 	return b.String()
+}
+
+// Read unmarshals json data from an io.Reader into an narray struct.
+func Read(r io.Reader) (*NArray, error) {
+
+	b, err := ioutil.ReadAll(r)
+	if err != nil {
+		return nil, err
+	}
+
+	// Get a Model object.
+	na := &NArray{}
+	e := json.Unmarshal(b, na)
+
+	if e != nil {
+		return nil, e
+	}
+	return na, nil
+}
+
+// ReadFile unmarshals json data from a file into an narray struct.
+func ReadFile(fn string) (*NArray, error) {
+
+	f, err := os.Open(fn)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+	glog.V(1).Infof("Reading narray from file %s.", fn)
+	return Read(f)
+}
+
+// Write writes narray to an io.Writer.
+func (na *NArray) Write(w io.Writer) error {
+
+	b, err := json.Marshal(na)
+	if err != nil {
+		return err
+	}
+	_, e := w.Write(b)
+	return e
+}
+
+// WriteFile writes an narray to a file.
+func (na *NArray) WriteFile(fn string) error {
+
+	e := os.MkdirAll(filepath.Dir(fn), 0755)
+	if e != nil {
+		return e
+	}
+	f, err := os.Create(fn)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	ee := na.Write(f)
+	if ee != nil {
+		return ee
+	}
+
+	glog.V(1).Infof("Wrote narray to file %s.", fn)
+	return nil
+}
+
+// ToJSON returns a json string.
+func (na *NArray) ToJSON() (string, error) {
+	var b bytes.Buffer
+	err := na.Write(&b)
+	return b.String(), err
+}
+
+// String prints the narray
+func (na *NArray) String() string {
+
+	return na.Sprint(func(na *NArray, k int) bool {
+		return true
+	})
+}
+
+// equal returns true if |x-y|/(|avg(x,y)|+1) < tol.
+func equal(x, y, tol float64) bool {
+	avg := math.Abs(x+y) / 2.0
+	sErr := math.Abs(x-y) / (avg + 1)
+	if sErr > tol {
+		return false
+	}
+	return true
+}
+
+// EqualValues compares two narrays elementwise.
+// Returns true if for all elements |x-y|/(|avg(x,y)|+1) < tol.
+func EqualValues(x *NArray, y *NArray, tol float64) bool {
+	if !EqualShape(x, y) {
+		panic("narrays must have equal shape.")
+	}
+	for i, _ := range x.Data {
+		if !equal(x.Data[i], y.Data[i], tol) {
+			return false
+		}
+	}
+	return true
 }
 
 func formatted(n, max int) string {

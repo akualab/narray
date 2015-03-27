@@ -9,6 +9,7 @@ import (
 	"math"
 	"math/rand"
 	"os"
+	"path/filepath"
 	"testing"
 )
 
@@ -288,6 +289,23 @@ func TestEqualShape(t *testing.T) {
 	}
 }
 
+func TestEqualValues(t *testing.T) {
+
+	if !EqualValues(randna[0], randna[0], 0.0) {
+		t.Fatalf("expected same values")
+	}
+	if EqualValues(randna[0], randna[1], 0.5) {
+		t.Fatalf("expected different values")
+	}
+	xx := Scale(nil, randna[0], 1.05)     // 5%
+	if !EqualValues(randna[0], xx, 0.1) { // 10% tol
+		t.Fatalf("expected same values")
+	}
+	if EqualValues(randna[0], xx, 0.01) { // 1% tol
+		t.Fatalf("expected different values")
+	}
+}
+
 func TestAdd(t *testing.T) {
 
 	in := x
@@ -521,6 +539,27 @@ func TestString(t *testing.T) {
 	// TODO: parse string and verify value...not the highest priority...
 
 	t.Log(s)
+}
+
+func TestWrite(t *testing.T) {
+
+	fn := filepath.Join(os.TempDir(), "narray.json")
+	x.WriteFile(fn)
+	t.Logf("Wrote to temp file: %s\n", fn)
+
+	// Read back.
+	x1, e := ReadFile(fn)
+	if e != nil {
+		t.Fatal(e)
+	}
+
+	t.Logf("Original narray:%s", x)
+	t.Logf("Read back from file:%s", x1)
+
+	// compare
+	if !EqualValues(x, x1, 0.001) {
+		t.Fatal("write/read failed")
+	}
 }
 
 func BenchmarkRead(b *testing.B) {
