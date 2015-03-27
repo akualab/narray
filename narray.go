@@ -23,14 +23,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"math"
 	"math/rand"
 	"os"
 	"path/filepath"
 	"strconv"
-
-	"github.com/golang/glog"
 )
 
 // The NArray object.
@@ -567,20 +564,13 @@ func (na *NArray) Sprint(f func(na *NArray, index int) bool) string {
 
 // Read unmarshals json data from an io.Reader into an narray struct.
 func Read(r io.Reader) (*NArray, error) {
-
-	b, err := ioutil.ReadAll(r)
-	if err != nil {
+	dec := json.NewDecoder(r)
+	var na NArray
+	err := dec.Decode(&na)
+	if err != nil && err != io.EOF {
 		return nil, err
 	}
-
-	// Get a Model object.
-	na := &NArray{}
-	e := json.Unmarshal(b, na)
-
-	if e != nil {
-		return nil, e
-	}
-	return na, nil
+	return &na, nil
 }
 
 // ReadFile unmarshals json data from a file into an narray struct.
@@ -591,19 +581,18 @@ func ReadFile(fn string) (*NArray, error) {
 		return nil, err
 	}
 	defer f.Close()
-	glog.V(1).Infof("Reading narray from file %s.", fn)
 	return Read(f)
 }
 
 // Write writes narray to an io.Writer.
 func (na *NArray) Write(w io.Writer) error {
 
-	b, err := json.Marshal(na)
+	enc := json.NewEncoder(w)
+	err := enc.Encode(na)
 	if err != nil {
 		return err
 	}
-	_, e := w.Write(b)
-	return e
+	return nil
 }
 
 // WriteFile writes an narray to a file.
@@ -623,8 +612,6 @@ func (na *NArray) WriteFile(fn string) error {
 	if ee != nil {
 		return ee
 	}
-
-	glog.V(1).Infof("Wrote narray to file %s.", fn)
 	return nil
 }
 
