@@ -469,6 +469,51 @@ func (na *NArray) SetValue(v float64) *NArray {
 	return na
 }
 
+// Encode converts values in-place as follows:
+// Inf to math.MaxFloat64
+// -Inf to -math.MaxFloat64
+// NaN ro 0
+//
+// Returns the indices of the modified values as follows:
+// Positive integer in inf corresponds to index of element with value Inf
+// Negative integer in inf corresponds to -index of element with value Inf
+// Indices in nan are the elements with value NaN
+func (na *NArray) Encode() (inf, nan []int) {
+
+	inf = []int{}
+	nan = []int{}
+	for k, v := range na.Data {
+		switch {
+		case math.IsInf(v, 1):
+			na.Data[k] = math.MaxFloat64
+			inf = append(inf, k)
+		case math.IsInf(v, -1):
+			na.Data[k] = -math.MaxFloat64
+			inf = append(inf, -k)
+		case math.IsNaN(v):
+			na.Data[k] = 0
+			nan = append(nan, k)
+		}
+	}
+	return
+}
+
+// Decode converts values in-place.
+// See Encode() for details.
+func (na *NArray) Decode(inf, nan []int) {
+
+	for _, v := range inf {
+		if v >= 0 {
+			na.Data[v] = math.Inf(1)
+		} else {
+			na.Data[-v] = math.Inf(-1)
+		}
+	}
+	for _, v := range nan {
+		na.Data[v] = math.NaN()
+	}
+}
+
 // Vector returns a subarray of rank 1 as follows:
 //
 // Example, given a 5x10 matrix (rank=2), return the vector
@@ -620,6 +665,54 @@ func (na *NArray) ToJSON() (string, error) {
 	var b bytes.Buffer
 	err := na.Write(&b)
 	return b.String(), err
+}
+
+// MarshalJSON implements the json.Marshaller interface.
+// The custom marshaller is needed to encode Inf/NaN values.
+func (na *NArray) MarshalJSON() ([]byte, error) {
+
+	ena := na.Copy()
+	inf, nan := ena.Encode()
+	return json.Marshal(struct {
+		Rank    int       `json:"rank"`
+		Shape   []int     `json:"shape"`
+		Data    []float64 `json:"data"`
+		Strides []int     `json:"strides"`
+		Inf     []int     `json:"inf,omitempty"`
+		NaN     []int     `json:"nan,omitempty"`
+	}{
+		Rank:    ena.Rank,
+		Shape:   ena.Shape,
+		Data:    ena.Data,
+		Strides: ena.Strides,
+		Inf:     inf,
+		NaN:     nan,
+	})
+}
+
+// UnmarshalJSON implements the json.Unarshaller interface.
+// The custom unmarshaller is needed to decode Inf/NaN values.
+func (na *NArray) UnmarshalJSON(b []byte) error {
+	x := struct {
+		Rank    int       `json:"rank"`
+		Shape   []int     `json:"shape"`
+		Data    []float64 `json:"data"`
+		Strides []int     `json:"strides"`
+		Inf     []int     `json:"inf,omitempty"`
+		NaN     []int     `json:"nan,omitempty"`
+	}{}
+
+	err := json.Unmarshal(b, &x)
+	if err != nil {
+		return err
+	}
+
+	na.Rank = x.Rank
+	na.Shape = x.Shape
+	na.Data = x.Data
+	na.Strides = x.Strides
+	na.Decode(x.Inf, x.NaN)
+	return nil
 }
 
 // String prints the narray

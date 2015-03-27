@@ -562,6 +562,37 @@ func TestWrite(t *testing.T) {
 	}
 }
 
+func TestEncode(t *testing.T) {
+
+	xx := x.Copy()
+	xx.Set(math.Inf(-1), 1, 1)
+	xx.Set(math.Inf(-1), 1, 4)
+	xx.Set(math.Inf(1), 1, 3)
+	xx.Set(math.NaN(), 1, 2)
+	xx.Decode(xx.Encode())
+	if !EqualValues(x, xx, 0) {
+		t.Fatal("encode/decode failed")
+	}
+
+	fn := filepath.Join(os.TempDir(), "narray.json")
+	xx.WriteFile(fn)
+	t.Logf("Wrote to temp file: %s\n", fn)
+
+	// Read back.
+	x1, e := ReadFile(fn)
+	if e != nil {
+		t.Fatal(e)
+	}
+
+	t.Logf("Original narray:%s", x)
+	t.Logf("Read back from file:%s", x1)
+
+	// compare
+	if !EqualValues(x, x1, 0.001) {
+		t.Fatal("write/read failed")
+	}
+}
+
 func BenchmarkRead(b *testing.B) {
 
 	rank := rand.Intn(10)
