@@ -470,14 +470,14 @@ func (na *NArray) SetValue(v float64) *NArray {
 }
 
 // Encode converts values in-place as follows:
-// Inf to math.MaxFloat64
-// -Inf to -math.MaxFloat64
-// NaN ro 0
+//   Inf to math.MaxFloat64
+//   -Inf to -math.MaxFloat64
+//   NaN ro 0
 //
 // Returns the indices of the modified values as follows:
-// Positive integer in inf corresponds to index of element with value Inf
-// Negative integer in inf corresponds to -index of element with value Inf
-// Indices in nan are the elements with value NaN
+//   Positive integer in inf corresponds to index of element with value Inf
+//   Negative integer in inf corresponds to -index of element with value Inf
+//   Indices in nan are the elements with value NaN
 func (na *NArray) Encode() (inf, nan []int) {
 
 	inf = []int{}
