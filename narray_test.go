@@ -144,7 +144,7 @@ func checkVector(t *testing.T, dim, idx int, vec *NArray) {
 		j := int(x / 10)
 		k := int(x - (j * 10))
 		if v != na234.At(i, j, k) {
-			t.Fatalf("vec values dont' match fir index (%d,%d,%d) v:%d, expected:%d", i, j, k, v, na234.At(i, j, k))
+			t.Fatalf("vec values dont' match fir index (%d,%d,%d) v:%f, expected:%f", i, j, k, v, na234.At(i, j, k))
 		}
 	}
 }
@@ -386,6 +386,24 @@ func TestScale(t *testing.T) {
 	}
 }
 
+func TestAbs(t *testing.T) {
+	xx := New(3, 3)
+	xx.Set(-1, 1, 1)
+	xx.Set(2, 1, 2)
+	xx.Set(-3, 2, 2)
+
+	out := AbsNew(nil, xx)
+	if out.At(1, 1) != 1.0 {
+		t.Fatalf("expected 1, got %f", out.At(1, 1))
+	}
+	if out.At(1, 2) != 2 {
+		t.Fatalf("expected 12, got %f", out.At(1, 2))
+	}
+	if out.At(2, 2) != 3 {
+		t.Fatalf("expected 3, got %f", out.At(2, 2))
+	}
+}
+
 func TestReverseIndex(t *testing.T) {
 
 	na := New(7, 3, 2, 14, 1, 7)
@@ -516,7 +534,7 @@ func TestRcp(t *testing.T) {
 	for i := 0; i < 3; i++ {
 		for j := 0; j < 5; j++ {
 			if out.At(i, j) != 1.0/x.At(i, j) {
-				t.Fatalf("expected %f, got %f", x.At(i, j), out.At(i, j))
+				t.Fatalf("expected %f, got %f", 1.0/x.At(i, j), out.At(i, j))
 			}
 
 		}
@@ -627,4 +645,205 @@ func BenchmarkProd(b *testing.B) {
 	}
 	_ = p
 
+}
+
+func BenchmarkAdd10001(b *testing.B) {
+	N := 10001
+	na := New(N)
+	nb := New(N)
+	dst := New(N)
+	for i := 0; i < N; i++ {
+		na.Data[i] = float64(i)
+		nb.Data[i] = float64(i) * 0.5
+	}
+
+	b.ResetTimer()
+	b.SetBytes(int64(N * 8))
+	for i := 0; i < b.N; i++ {
+		dst = Add(dst, na, nb)
+	}
+}
+
+func BenchmarkMul10001(b *testing.B) {
+	N := 10001
+	na := New(N)
+	nb := New(N)
+	dst := New(N)
+	for i := 0; i < N; i++ {
+		na.Data[i] = float64(i)
+		nb.Data[i] = float64(i) * 0.5
+	}
+
+	b.ResetTimer()
+	b.SetBytes(int64(N * 8))
+	for i := 0; i < b.N; i++ {
+		dst = Mul(dst, na, nb)
+	}
+}
+
+func BenchmarkAddScaled10001(b *testing.B) {
+	N := 10001
+	na := New(N)
+	nb := New(N)
+	for i := 0; i < N; i++ {
+		na.Data[i] = float64(i)
+		nb.Data[i] = float64(i) * 0.5
+	}
+
+	b.ResetTimer()
+	b.SetBytes(int64(N * 8))
+	for i := 0; i < b.N; i++ {
+		na = AddScaled(na, nb, 1.1)
+	}
+}
+
+func BenchmarkMin10001(b *testing.B) {
+	N := 10001
+	na := New(N)
+	nb := New(N)
+	dst := New(N)
+	for i := 0; i < N; i++ {
+		na.Data[i] = float64(i)
+		nb.Data[i] = float64(i) * 0.5
+	}
+
+	b.ResetTimer()
+	b.SetBytes(int64(N * 8))
+	for i := 0; i < b.N; i++ {
+		dst = MinArray(dst, na, nb)
+	}
+}
+
+func BenchmarkMax10001(b *testing.B) {
+	N := 10001
+	na := New(N)
+	nb := New(N)
+	dst := New(N)
+	for i := 0; i < N; i++ {
+		na.Data[i] = float64(i)
+		nb.Data[i] = float64(i) * 0.5
+	}
+
+	b.ResetTimer()
+	b.SetBytes(int64(N * 8))
+	for i := 0; i < b.N; i++ {
+		dst = MaxArray(dst, na, nb)
+	}
+}
+
+func BenchmarkMinValue10001(b *testing.B) {
+	N := 10001
+	na := New(N)
+	for i := 0; i < N; i++ {
+		na.Data[i] = float64(i)
+	}
+
+	b.ResetTimer()
+	b.SetBytes(int64(N * 8))
+	for i := 0; i < b.N; i++ {
+		_ = na.Min()
+	}
+}
+
+func BenchmarkMaxValue10001(b *testing.B) {
+	N := 10001
+	na := New(N)
+	for i := 0; i < N; i++ {
+		na.Data[i] = float64(i)
+	}
+
+	b.ResetTimer()
+	b.SetBytes(int64(N * 8))
+	for i := 0; i < b.N; i++ {
+		_ = na.Max()
+	}
+}
+
+func BenchmarkSum10001(b *testing.B) {
+	N := 10001
+	na := New(N)
+	for i := 0; i < N; i++ {
+		na.Data[i] = float64(i)
+	}
+
+	b.ResetTimer()
+	b.SetBytes(int64(N * 8))
+	for i := 0; i < b.N; i++ {
+		_ = na.Sum()
+	}
+}
+
+func BenchmarkRcp10001(b *testing.B) {
+	N := 10001
+	na := New(N)
+	dst := New(N)
+	for i := 0; i < N; i++ {
+		na.Data[i] = float64(i)
+	}
+
+	b.ResetTimer()
+	b.SetBytes(int64(N * 8))
+	for i := 0; i < b.N; i++ {
+		dst = Rcp(dst, na)
+	}
+}
+
+func BenchmarkSqrt10001(b *testing.B) {
+	N := 10001
+	na := New(N)
+	dst := New(N)
+	for i := 0; i < N; i++ {
+		na.Data[i] = float64(i)
+	}
+
+	b.ResetTimer()
+	b.SetBytes(int64(N * 8))
+	for i := 0; i < b.N; i++ {
+		dst = Sq(dst, na)
+	}
+}
+
+func BenchmarkAbs10001(b *testing.B) {
+	N := 10001
+	na := New(N)
+	dst := New(N)
+	for i := 0; i < N; i++ {
+		na.Data[i] = float64(i)
+	}
+
+	b.ResetTimer()
+	b.SetBytes(int64(N * 8))
+	for i := 0; i < b.N; i++ {
+		dst = AbsNew(dst, na)
+	}
+}
+
+func BenchmarkScale10001(b *testing.B) {
+	N := 10001
+	na := New(N)
+	dst := New(N)
+	for i := 0; i < N; i++ {
+		na.Data[i] = float64(i)
+	}
+
+	b.ResetTimer()
+	b.SetBytes(int64(N * 8))
+	for i := 0; i < b.N; i++ {
+		dst = Scale(dst, na, 20.0)
+	}
+}
+
+func BenchmarkConstAdd10001(b *testing.B) {
+	N := 10001
+	na := New(N)
+	dst := New(N)
+	for i := 0; i < N; i++ {
+		na.Data[i] = float64(i)
+	}
+
+	b.ResetTimer()
+	b.SetBytes(int64(N * 8))
+	for i := 0; i < b.N; i++ {
+		dst = AddConst(dst, na, 20.0)
+	}
 }
