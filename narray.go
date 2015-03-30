@@ -515,45 +515,6 @@ func (na *NArray) Decode(inf, nan []int) {
 	}
 }
 
-// Vector returns a subarray of rank 1 as follows:
-//
-// Example, given a 5x10 matrix (rank=2), return the vector
-// of dim 10 for row idx=3:
-//
-//   x := New(5,10)
-//   y := x.SubArray(1,3) // dim=1, idx=3
-//   // y = {x_30, x_31, ... , x_39}
-//
-func (na *NArray) Vector(dim, idx int) *NArray {
-
-	if len(na.Shape) == 0 {
-		panic("cannot get vector from narray with rank=0")
-	}
-
-	vLen := 1
-	for k, v := range na.Shape {
-		if k != dim {
-			vLen *= v
-		}
-	}
-	newArr := New(vLen)
-	stride := na.Strides[dim]
-	shape := na.Shape[dim]
-	ncopies := vLen / stride
-	inc := shape * stride
-	end := 0
-	to := 0
-	start := stride * idx
-	for i := 0; i < ncopies; i++ {
-		end = start + stride
-		copy(newArr.Data[to:], na.Data[start:end])
-		start += inc
-		to += stride
-	}
-
-	return newArr
-}
-
 // SubArray returns an narray of lower rank as follows:
 //
 // Example, given an narray with shape 2x3x4 (rank=3), return the subarray

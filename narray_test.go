@@ -197,10 +197,9 @@ func TestVector(t *testing.T) {
 	vec = na234.Vector(2, 0)
 	t.Log(vec)
 	checkVector(t, 2, 0, vec)
-
 }
 
-func checkVector(t *testing.T, dim, idx int, vec *NArray) {
+func checkVector(t *testing.T, dim, idx int, vec *Vector) {
 
 	for _, v := range vec.Data {
 		x := int(v - 9000)
