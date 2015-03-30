@@ -2,6 +2,8 @@
 
 package narray
 
+import "math"
+
 // These are the fallbacks that are used when not on AMD64 platform.
 
 // divSlice divides two slices
@@ -157,7 +159,7 @@ func sliceSum(a []float64) float64 {
 // Assumptions the assembly can make:
 // out != nil, a != nil
 // len(out)  == len(a)
-func absSliceGo(out, a []float64) {
+func absSlice(out, a []float64) {
 	for i, v := range a {
 		out[i] = math.Abs(v)
 	}
