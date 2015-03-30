@@ -5,18 +5,6 @@ package narray
 
 import "math"
 
-// Abs applies math.Abs() elementwise to a multidimensional array.
-// See math package in standard lib for details.
-func Abs(out, in *NArray) *NArray {
-	if out == nil {
-		out = New(in.Shape...)
-	}
-	for k, v := range in.Data {
-		out.Data[k] = math.Abs(v)
-	}
-	return out
-}
-
 // Acosh applies math.Acosh() elementwise to a multidimensional array.
 // See math package in standard lib for details.
 func Acosh(out, in *NArray) *NArray {
@@ -361,18 +349,6 @@ func Cosh(out, in *NArray) *NArray {
 	}
 	for k, v := range in.Data {
 		out.Data[k] = math.Cosh(v)
-	}
-	return out
-}
-
-// Sqrt applies math.Sqrt() elementwise to a multidimensional array.
-// See math package in standard lib for details.
-func Sqrt(out, in *NArray) *NArray {
-	if out == nil {
-		out = New(in.Shape...)
-	}
-	for k, v := range in.Data {
-		out.Data[k] = math.Sqrt(v)
 	}
 	return out
 }

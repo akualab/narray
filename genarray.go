@@ -24,6 +24,8 @@ import (
 
 const outputName = "math_gen.go"
 
+var exclude = map[string]bool{"Sqrt": true, "Abs": true}
+
 // Match lines with pattern: "func Log(x float64) float64"
 var re = regexp.MustCompile("^func ([A-Z][[:alnum:]]*)[(][[:alnum:]]+ float64[)] float64")
 
@@ -79,7 +81,8 @@ func names() []string {
 		for scanner.Scan() {
 			line := scanner.Text()
 			name, ok := f2f(line)
-			if ok {
+			_, ok2 := exclude[name]
+			if ok && !ok2 {
 				names = append(names, name)
 			}
 		}

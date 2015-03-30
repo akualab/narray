@@ -13,6 +13,51 @@ import (
 	"testing"
 )
 
+type ar func(*NArray, *NArray) *NArray
+type sc func(float64) float64
+
+type F struct {
+	name       string
+	arrayFunc  ar
+	scalarFunc sc
+}
+
+var testList = []F{
+	{"Abs", Abs, math.Abs},
+	{"Sqrt", Sqrt, math.Sqrt},
+	{"Acosh", Acosh, math.Acosh},
+	{"Asin", Asin, math.Asin},
+	{"Acos", Acos, math.Acos},
+	{"Asinh", Asinh, math.Asinh},
+	{"Atan", Atan, math.Atan},
+	{"Atanh", Atanh, math.Atanh},
+	{"Cbrt", Cbrt, math.Cbrt},
+	{"Erf", Erf, math.Erf},
+	{"Erfc", Erfc, math.Erfc},
+	{"Exp", Exp, math.Exp},
+	{"Exp2", Exp2, math.Exp2},
+	{"Expm1", Expm1, math.Expm1},
+	{"Floor", Floor, math.Floor},
+	{"Ceil", Ceil, math.Ceil},
+	{"Trunc", Trunc, math.Trunc},
+	{"Gamma", Gamma, math.Gamma},
+	{"J0", J0, math.J0},
+	{"Y0", Y0, math.Y0},
+	{"J1", J1, math.J1},
+	{"Y1", Y1, math.Y1},
+	{"Log", Log, math.Log},
+	{"Log10", Log10, math.Log10},
+	{"Log2", Log2, math.Log2},
+	{"Log1p", Log1p, math.Log1p},
+	{"Logb", Logb, math.Logb},
+	{"Cos", Cos, math.Cos},
+	{"Sin", Sin, math.Sin},
+	{"Sinh", Sinh, math.Sinh},
+	{"Cosh", Cosh, math.Cosh},
+	{"Tan", Tan, math.Tan},
+	{"Tanh", Tanh, math.Tanh},
+}
+
 // copied from github.com/gonum/floats
 func panics(fun func()) (b bool) {
 	defer func() {
@@ -53,11 +98,31 @@ func TestMain(m *testing.M) {
 	r := rand.New(rand.NewSource(222))
 	randna = make([]*NArray, 10, 10)
 	for k := range randna {
-		//		randna[k] = Norm(r, 0.0, 100.0, 2, 3, 4, 5)
-		randna[k] = Norm(r, 0.0, 100.0, 11, 3, 4)
+		randna[k] = Norm(r, 0.0, 100.0, 11, 3, 8, 22)
 	}
-
 	os.Exit(m.Run())
+}
+
+func TestF2(t *testing.T) {
+
+	for _, v := range testList {
+		testF2(t, v)
+	}
+}
+
+func testF2(t *testing.T, item F) {
+
+	z := item.arrayFunc(nil, randna[0])
+	xx := randna[0].Copy()
+	for k, v := range randna[0].Data {
+		xx.Data[k] = item.scalarFunc(v)
+	}
+	if !EqualValues(z, xx, 0.00001) {
+		t.Errorf("func %s failed", item.name)
+		t.Errorf("expected %s", xx)
+		t.Errorf("got %s", z)
+		t.FailNow()
+	}
 }
 
 func TestNew(t *testing.T) {
@@ -264,6 +329,12 @@ func TestLog(t *testing.T) {
 	if math.Log(na.At(1, 1)) != log.At(1, 1) {
 		t.Fatalf("expected %f, got %f", math.Log(na.At(1, 1)), log.At(1, 1))
 	}
+
+	aa := randna[0].Copy()
+	bb := Exp(nil, Log(aa, aa))
+	if !EqualValues(randna[0], bb, 0.00001) {
+		t.Fatalf("expected same values")
+	}
 }
 
 func scaleFunc(a float64) ApplyFunc {
@@ -278,6 +349,14 @@ func TestApply(t *testing.T) {
 
 	if out.At(1, 1) != 12.0 {
 		t.Fatalf("expected 12.0, got %f", out.At(1, 1))
+	}
+
+	xx := New(x.Shape...)
+	for k, v := range x.Data {
+		xx.Data[k] = v * 2.0
+	}
+	if !EqualValues(out, xx, 0) {
+		t.Fatalf("expected same values")
 	}
 }
 
@@ -322,6 +401,17 @@ func TestAdd(t *testing.T) {
 	if !panics(func() { Add(nil, in, in3, in2, in4) }) {
 		t.Errorf("did not panic with shape mismatch")
 	}
+
+	z := Add(nil, randna...)
+	xx := New(z.Shape...)
+	for i, _ := range randna {
+		for k, v := range randna[i].Data {
+			xx.Data[k] += v
+		}
+	}
+	if !EqualValues(z, xx, 0) {
+		t.Fatalf("expected same values")
+	}
 }
 
 func TestAddConst(t *testing.T) {
@@ -350,57 +440,66 @@ func TestAddScaled(t *testing.T) {
 }
 
 func TestSub(t *testing.T) {
-	z := Scale(nil, x, -1)
-	out := Add(nil, y, z)
-	if out.At(1, 1) != 2.0 {
-		t.Fatalf("expected 2.0, got %f", out.At(1, 1))
+
+	z := Scale(nil, randna[0], -1)
+	Add(z, randna[1], z)
+
+	xx := New(z.Shape...)
+	for k, v := range randna[0].Data {
+		xx.Data[k] = randna[1].Data[k] - v
+	}
+	if !EqualValues(z, xx, 0) {
+		t.Fatalf("expected same values")
 	}
 }
 
 func TestDiv(t *testing.T) {
-	z := Rcp(nil, x)
-	out := Mul(nil, y, z)
-	if out.At(1, 1) != 4.0/3.0 {
-		t.Fatalf("expected 4/3, got %f", out.At(1, 1))
+
+	z := Rcp(nil, randna[0])
+	Mul(z, randna[1], z)
+
+	xx := New(z.Shape...)
+	for k, v := range randna[0].Data {
+		xx.Data[k] = randna[1].Data[k] / v
+	}
+	if !EqualValues(z, xx, 0.0001) {
+		t.Fatalf("expected same values")
 	}
 }
 
 func TestMul(t *testing.T) {
-	out := Mul(nil, y, x)
-	if out.At(1, 1) != 48.0 {
-		t.Fatalf("expected 48, got %f", out.At(1, 1))
+	z := Mul(nil, randna...)
+	xx := New(z.Shape...)
+	xx.SetValue(1)
+	for i, _ := range randna {
+		for k, v := range randna[i].Data {
+			xx.Data[k] *= v
+		}
 	}
-
-	y1 := y.Copy()
-	Mul(y1, y1, x)
-	if y1.At(1, 1) != 48.0 {
-		t.Fatalf("expected 48, got %f", y1.At(1, 1))
+	if !EqualValues(z, xx, 0) {
+		t.Fatalf("expected same values")
 	}
-
 }
 
 func TestScale(t *testing.T) {
-	out := Scale(nil, x, 2.0)
-	if out.At(1, 1) != 12.0 {
-		t.Fatalf("expected 12, got %f", out.At(1, 1))
+	z := Scale(nil, randna[0], 2.0)
+	xx := randna[0].Copy()
+	for k, v := range randna[0].Data {
+		xx.Data[k] = v * 2
+	}
+	if !EqualValues(z, xx, 0) {
+		t.Fatalf("expected same values")
 	}
 }
 
 func TestAbs(t *testing.T) {
-	xx := New(3, 3)
-	xx.Set(-1, 1, 1)
-	xx.Set(2, 1, 2)
-	xx.Set(-3, 2, 2)
-
-	out := AbsNew(nil, xx)
-	if out.At(1, 1) != 1.0 {
-		t.Fatalf("expected 1, got %f", out.At(1, 1))
+	z := Abs(nil, randna[0])
+	xx := randna[0].Copy()
+	for k, v := range randna[0].Data {
+		xx.Data[k] = math.Abs(v)
 	}
-	if out.At(1, 2) != 2 {
-		t.Fatalf("expected 12, got %f", out.At(1, 2))
-	}
-	if out.At(2, 2) != 3 {
-		t.Fatalf("expected 3, got %f", out.At(2, 2))
+	if !EqualValues(z, xx, 0) {
+		t.Fatalf("expected same values")
 	}
 }
 
@@ -799,7 +898,7 @@ func BenchmarkSqrt10001(b *testing.B) {
 	b.ResetTimer()
 	b.SetBytes(int64(N * 8))
 	for i := 0; i < b.N; i++ {
-		dst = Sq(dst, na)
+		dst = Sqrt(dst, na)
 	}
 }
 
@@ -814,7 +913,7 @@ func BenchmarkAbs10001(b *testing.B) {
 	b.ResetTimer()
 	b.SetBytes(int64(N * 8))
 	for i := 0; i < b.N; i++ {
-		dst = AbsNew(dst, na)
+		dst = Abs(dst, na)
 	}
 }
 

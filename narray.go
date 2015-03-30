@@ -318,11 +318,10 @@ func Rcp(out, in *NArray) *NArray {
 	return out
 }
 
-// Sq returns square root values of narrays elementwise.
+// Sqrt returns square root values of narrays elementwise.
 // out = math.Sqrt(in)
 // If out is nil a new array is created.
-// TODO(klauspost): Remove generated function and rename this.
-func Sq(out, in *NArray) *NArray {
+func Sqrt(out, in *NArray) *NArray {
 	if out == nil {
 		out = New(in.Shape...)
 	} else {
@@ -334,11 +333,10 @@ func Sq(out, in *NArray) *NArray {
 	return out
 }
 
-// AbsNew returns square root values of narrays elementwise.
+// Abs returns square root values of narrays elementwise.
 // out = math.Abs(in)
 // If out is nil a new array is created.
-// TODO(klauspost): Remove generated function and rename this.
-func AbsNew(out, in *NArray) *NArray {
+func Abs(out, in *NArray) *NArray {
 	if out == nil {
 		out = New(in.Shape...)
 	} else {
