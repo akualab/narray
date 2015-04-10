@@ -16,6 +16,16 @@ func divSlice(out, a, b []float64) {
 	}
 }
 
+// subSlice subtracts two slices
+// Assumptions the assembly can make:
+// out != nil, a != nil, b != nil
+// len(out)  == len(a) == len(b)
+func subSlice(out, a, b []float64) {
+	for i := 0; i < len(out); i++ {
+		out[i] = a[i] - b[i]
+	}
+}
+
 // addSlice adds two slices
 // Assumptions the assembly can make:
 // out != nil, a != nil, b != nil

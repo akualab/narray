@@ -440,8 +440,7 @@ func TestAddScaled(t *testing.T) {
 
 func TestSub(t *testing.T) {
 
-	z := Scale(nil, randna[0], -1)
-	Add(z, randna[1], z)
+	z := Sub(nil, randna[1], randna[0])
 
 	xx := New(z.Shape...)
 	for k, v := range randna[0].Data {
@@ -454,8 +453,7 @@ func TestSub(t *testing.T) {
 
 func TestDiv(t *testing.T) {
 
-	z := Rcp(nil, randna[0])
-	Mul(z, randna[1], z)
+	z := Div(nil, randna[1], randna[0])
 
 	xx := New(z.Shape...)
 	for k, v := range randna[0].Data {
@@ -762,6 +760,40 @@ func BenchmarkAdd10001(b *testing.B) {
 	}
 }
 
+func BenchmarkSub10001(b *testing.B) {
+	N := 10001
+	na := New(N)
+	nb := New(N)
+	dst := New(N)
+	for i := 0; i < N; i++ {
+		na.Data[i] = float64(i)
+		nb.Data[i] = float64(i) * 0.5
+	}
+
+	b.ResetTimer()
+	b.SetBytes(int64(N * 8))
+	for i := 0; i < b.N; i++ {
+		dst = Sub(dst, na, nb)
+	}
+}
+
+func BenchmarkSubScaleMul10001(b *testing.B) {
+	N := 10001
+	na := New(N)
+	nb := New(N)
+	dst := New(N)
+	for i := 0; i < N; i++ {
+		na.Data[i] = float64(i)
+		nb.Data[i] = float64(i) * 0.5
+	}
+
+	b.ResetTimer()
+	b.SetBytes(int64(N * 8))
+	for i := 0; i < b.N; i++ {
+		dst = Add(dst, na, Scale(dst, nb, -1.0))
+	}
+}
+
 func BenchmarkMul10001(b *testing.B) {
 	N := 10001
 	na := New(N)
@@ -776,6 +808,40 @@ func BenchmarkMul10001(b *testing.B) {
 	b.SetBytes(int64(N * 8))
 	for i := 0; i < b.N; i++ {
 		dst = Mul(dst, na, nb)
+	}
+}
+
+func BenchmarkDiv10001(b *testing.B) {
+	N := 10001
+	na := New(N)
+	nb := New(N)
+	dst := New(N)
+	for i := 0; i < N; i++ {
+		na.Data[i] = float64(i)
+		nb.Data[i] = float64(i) * 0.5
+	}
+
+	b.ResetTimer()
+	b.SetBytes(int64(N * 8))
+	for i := 0; i < b.N; i++ {
+		dst = Div(dst, na, nb)
+	}
+}
+
+func BenchmarkDivRcpMul10001(b *testing.B) {
+	N := 10001
+	na := New(N)
+	nb := New(N)
+	dst := New(N)
+	for i := 0; i < N; i++ {
+		na.Data[i] = float64(i)
+		nb.Data[i] = float64(i) * 0.5
+	}
+
+	b.ResetTimer()
+	b.SetBytes(int64(N * 8))
+	for i := 0; i < b.N; i++ {
+		dst = Mul(dst, na, Rcp(dst, nb))
 	}
 }
 
