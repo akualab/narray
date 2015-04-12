@@ -188,28 +188,22 @@ func TestSet(t *testing.T) {
 
 func TestVector(t *testing.T) {
 
-	vec := na234.Vector(0, 1)
+	vec := na234.Vector(1, 2, -1)
 	t.Log(vec)
-	checkVector(t, 0, 1, vec)
-	vec = na234.Vector(1, 2)
+	checkVector(t, vec, 1, 2, -1)
+	vec = na234.Vector(-1, 2, 2)
 	t.Log(vec)
-	checkVector(t, 1, 2, vec)
-	vec = na234.Vector(2, 0)
+	checkVector(t, vec, -1, 2, 2)
+	vec = na234.Vector(0, -1, 3)
 	t.Log(vec)
-	checkVector(t, 2, 0, vec)
+	checkVector(t, vec, 0, -1, 3)
 }
 
-func checkVector(t *testing.T, dim, idx int, vec *Vector) {
+func checkVector(t *testing.T, vec *Vector, query ...int) {
 
-	for _, v := range vec.Data {
-		x := int(v - 9000)
-		i := int(x / 100)
-		x = x - (i * 100)
-		j := int(x / 10)
-		k := int(x - (j * 10))
-		if v != na234.At(i, j, k) {
-			t.Fatalf("vec values dont' match fir index (%d,%d,%d) v:%f, expected:%f", i, j, k, v, na234.At(i, j, k))
-		}
+	sa := na234.SubArray(query...)
+	if !EqualValues((*NArray)(vec), sa, 0.0001) {
+		t.Fatalf("vec values dont' match expected:%s, got:%s", vec, sa)
 	}
 }
 
