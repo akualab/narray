@@ -35,6 +35,15 @@ func mulSliceGo(out, a, b []float64) {
 	}
 }
 
+// approx 3x faster than Go
+func subSlice(out, a, b []float64)
+
+func subSliceGo(out, a, b []float64) {
+	for i := 0; i < len(out); i++ {
+		out[i] = a[i] - b[i]
+	}
+}
+
 // approx 4x faster than Go
 func minSlice(out, a, b []float64)
 

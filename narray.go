@@ -255,6 +255,58 @@ func Mul(out *NArray, in ...*NArray) *NArray {
 	return out
 }
 
+// Div divides narrays elementwise.
+//   out = in[0] / in[1] / in[2] ....
+// Will panic if there are not at least two input narrays
+// or if narray shapes don't match.
+// If out is nil a new array is created.
+func Div(out *NArray, in ...*NArray) *NArray {
+
+	if len(in) < 2 {
+		panic("not in enough arguments")
+	}
+	if out == nil {
+		out = New(in[0].Shape...)
+	}
+	if !EqualShape(out, in...) {
+		panic("narrays must have equal shape.")
+	}
+
+	divSlice(out.Data, in[0].Data, in[1].Data)
+
+	// Multiply each following, if more than two arguments.
+	for k := 2; k < len(in); k++ {
+		divSlice(out.Data, out.Data, in[k].Data)
+	}
+	return out
+}
+
+// Sub subtracts narrays elementwise.
+//   out = in[0] - in[1] - in[2] ....
+// Will panic if there are not at least two input narrays
+// or if narray shapes don't match.
+// If out is nil a new array is created.
+func Sub(out *NArray, in ...*NArray) *NArray {
+
+	if len(in) < 2 {
+		panic("not in enough arguments")
+	}
+	if out == nil {
+		out = New(in[0].Shape...)
+	}
+	if !EqualShape(out, in...) {
+		panic("narrays must have equal shape.")
+	}
+
+	subSlice(out.Data, in[0].Data, in[1].Data)
+
+	// Multiply each following, if more than two arguments.
+	for k := 2; k < len(in); k++ {
+		subSlice(out.Data, out.Data, in[k].Data)
+	}
+	return out
+}
+
 // AddConst adds const to an narray elementwise.
 // out = in + c
 // If out is nil a new array is created.

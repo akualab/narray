@@ -41,6 +41,46 @@ done_div:
     RET ,
 
 
+// func subSlice(out []float64, a []float64, b []float64) 
+TEXT ·subSlice(SB), 7, $0
+    MOVQ    out+0(FP),SI        // SI: &out
+    MOVQ    out_len+8(FP),DX    // DX: len(out)
+    MOVQ    a+24(FP),R11        // R11: &a
+    MOVQ    b+48(FP),R9         // R9: &b
+    MOVQ    DX, R10             // R10: len(out)
+    SHRQ    $2, DX              // DX: len(out) / 4
+    ANDQ    $3, R10             // R10: len(out) % 4
+    CMPQ    DX ,$0
+    JEQ     remain_sub
+loopback_sub:
+    MOVUPD  (R11),X0
+    MOVUPD  (R9),X1
+    SUBPD   X1,X0
+    MOVUPD  16(R11),X2
+    MOVUPD  16(R9),X3
+    SUBPD   X3,X2
+    MOVUPD  X0,(SI)
+    MOVUPD  X2,16(SI)
+    ADDQ    $32, R11
+    ADDQ    $32, R9
+    ADDQ    $32, SI
+    SUBQ    $1,DX
+    JNZ     loopback_sub
+remain_sub:
+    CMPQ    R10,$0
+    JEQ     done_sub
+onemore_sub:    
+    MOVSD   (R11),X0
+    MOVSD   (R9),X1
+    SUBSD   X1,X0
+    MOVSD   X0,(SI)
+    ADDQ    $8, R11
+    ADDQ    $8, R9
+    ADDQ    $8, SI
+    SUBQ    $1, R10
+    JNZ     onemore_sub
+done_sub:
+    RET 
 
 // func mulSlice(out []float64, a []float64, b []float64) 
 TEXT ·mulSlice(SB), 7, $0
@@ -559,3 +599,4 @@ done_sum:
     ADDSD   X2, X0
     MOVSD   X0, ret+24(FP)
     RET ,
+
