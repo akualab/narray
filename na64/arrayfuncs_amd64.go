@@ -1,6 +1,6 @@
 // +build amd64
 
-package narray
+package na64
 
 import "math"
 

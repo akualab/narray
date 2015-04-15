@@ -3,7 +3,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package narray
+package {{.Package}}
 
 import (
 	"math"
@@ -79,8 +79,8 @@ func TestMain(m *testing.M) {
 	y = New(3, 5)
 	for i := 0; i < 3; i++ {
 		for j := 0; j < 5; j++ {
-			x.Data[i*5+j] = float64(i*5 + j)
-			y.Data[i*5+j] = float64(i*5 + j + 2)
+			x.Data[i*5+j] = {{.Format}}(i*5 + j)
+			y.Data[i*5+j] = {{.Format}}(i*5 + j + 2)
 		}
 	}
 
@@ -88,7 +88,7 @@ func TestMain(m *testing.M) {
 	for i := 0; i < 2; i++ {
 		for j := 0; j < 3; j++ {
 			for k := 0; k < 4; k++ {
-				v := float64(9000 + i*100 + j*10 + k)
+				v := {{.Format}}(9000 + i*100 + j*10 + k)
 				na234.Set(v, i, j, k)
 			}
 		}
@@ -115,7 +115,7 @@ func testF2(t *testing.T, item F) {
 	z := item.arrayFunc(nil, randna[0])
 	xx := randna[0].Copy()
 	for k, v := range randna[0].Data {
-		xx.Data[k] = item.scalarFunc(v)
+		xx.Data[k] = {{.Format}}(item.scalarFunc(float64(v)))
 	}
 	if !EqualValues(z, xx, 0.00001) {
 		t.Errorf("func %s failed", item.name)
@@ -130,7 +130,7 @@ func TestNew(t *testing.T) {
 	na := New(3, 5)
 	for i := 0; i < 3; i++ {
 		for j := 0; j < 5; j++ {
-			na.Data[i*5+j] = float64(i*5 + j)
+			na.Data[i*5+j] = {{.Format}}(i*5 + j)
 		}
 	}
 
@@ -155,7 +155,7 @@ func TestSet(t *testing.T) {
 			for j := range indices {
 				indices[j] = rand.Intn(dims[j])
 			}
-			v := rand.Float64()
+ {{if .Float64}}v := rand.Float64(){{end}} {{if .Float32}}v := rand.Float32(){{end}}
 			na.Set(v, indices...)
 			w := na.At(indices...)
 			if v != w {
@@ -168,7 +168,7 @@ func TestSet(t *testing.T) {
 	na := New(dims...)
 	for i := 0; i < len(na.Data); i++ {
 
-		na.Data[i] = float64(i)
+		na.Data[i] = {{.Format}}(i)
 	}
 
 	for i := 0; i < dims[0]; i++ {
@@ -176,9 +176,9 @@ func TestSet(t *testing.T) {
 			for k := 0; k < dims[2]; k++ {
 				for l := 0; l < dims[3]; l++ {
 					v := na.At(i, j, k, l)
-					if v != float64(na.Index(i, j, k, l)) {
+					if v != {{.Format}}(na.Index(i, j, k, l)) {
 						t.Fatalf("values don't match - na.At(%d,%d,%d,%d) is [%f], expected [%f]",
-							i, j, k, l, v, float64(na.Index(i, j, k, l)))
+							i, j, k, l, v, {{.Format}}(na.Index(i, j, k, l)))
 					}
 				}
 			}
@@ -276,7 +276,7 @@ func TestCopy(t *testing.T) {
 	dims := []int{3, 15, 7, 9}
 	na := New(dims...)
 	for i := 0; i < len(na.Data); i++ {
-		na.Data[i] = float64(i)
+		na.Data[i] = {{.Format}}(i)
 	}
 	newna := na.Copy()
 
@@ -303,7 +303,7 @@ func loga(out, in *NArray) *NArray {
 		out = New(in.Shape...)
 	}
 	for k := range in.Data {
-		out.Data[k] = math.Log(in.Data[k])
+		out.Data[k] = {{.Format}}(math.Log(float64(in.Data[k])))
 	}
 	return out
 }
@@ -313,14 +313,14 @@ func TestLog(t *testing.T) {
 	na := y
 
 	loga := loga(nil, na)
-	if math.Log(na.At(1, 1)) != loga.At(1, 1) {
-		t.Fatalf("expected %f, got %f", math.Log(na.At(1, 1)), loga.At(1, 1))
+	if {{.Format}}(math.Log(float64(na.At(1, 1)))) != loga.At(1, 1) {
+		t.Fatalf("expected %f, got %f", math.Log(float64(na.At(1, 1))), loga.At(1, 1))
 	}
 
 	// use the genarated code
 	log := Log(nil, na)
-	if math.Log(na.At(1, 1)) != log.At(1, 1) {
-		t.Fatalf("expected %f, got %f", math.Log(na.At(1, 1)), log.At(1, 1))
+	if {{.Format}}(math.Log(float64(na.At(1, 1)))) != log.At(1, 1) {
+		t.Fatalf("expected %f, got %f", math.Log(float64(na.At(1, 1))), log.At(1, 1))
 	}
 
 	aa := randna[0].Copy()
@@ -330,8 +330,8 @@ func TestLog(t *testing.T) {
 	}
 }
 
-func scaleFunc(a float64) ApplyFunc {
-	return func(x float64) float64 { return x * a }
+func scaleFunc(a {{.Format}}) ApplyFunc {
+	return func(x {{.Format}}) {{.Format}} { return x * a }
 }
 
 func TestApply(t *testing.T) {
@@ -487,7 +487,7 @@ func TestAbs(t *testing.T) {
 	z := Abs(nil, randna[0])
 	xx := randna[0].Copy()
 	for k, v := range randna[0].Data {
-		xx.Data[k] = math.Abs(v)
+		xx.Data[k] = {{.Format}}(math.Abs(float64(v)))
 	}
 	if !EqualValues(z, xx, 0) {
 		t.Fatalf("expected same values")
@@ -673,10 +673,10 @@ func TestWrite(t *testing.T) {
 func TestEncode(t *testing.T) {
 
 	xx := x.Copy()
-	xx.Set(math.Inf(-1), 1, 1)
-	xx.Set(math.Inf(-1), 1, 4)
-	xx.Set(math.Inf(1), 1, 3)
-	xx.Set(math.NaN(), 1, 2)
+	xx.Set({{.Format}}(math.Inf(-1)), 1, 1)
+	xx.Set({{.Format}}(math.Inf(-1)), 1, 4)
+	xx.Set({{.Format}}(math.Inf(1)), 1, 3)
+	xx.Set({{.Format}}(math.NaN()), 1, 2)
 	xx.Decode(xx.Encode())
 	if !EqualValues(x, xx, 0) {
 		t.Fatal("encode/decode failed")
@@ -714,7 +714,7 @@ func BenchmarkRead(b *testing.B) {
 		indices[j] = rand.Intn(dims[j])
 	}
 
-	var w float64
+	var w {{.Format}}
 	for i := 0; i < b.N; i++ {
 		w = na.At(indices...)
 	}
@@ -726,10 +726,10 @@ func BenchmarkProd(b *testing.B) {
 	N := 1000
 	na := New(N)
 	for i := 0; i < N; i++ {
-		na.Data[i] = float64(i)
+		na.Data[i] = {{.Format}}(i)
 	}
 
-	var p float64
+	var p {{.Format}}
 	for i := 0; i < b.N; i++ {
 		p = na.Prod()
 	}
@@ -743,8 +743,8 @@ func BenchmarkAdd10001(b *testing.B) {
 	nb := New(N)
 	dst := New(N)
 	for i := 0; i < N; i++ {
-		na.Data[i] = float64(i)
-		nb.Data[i] = float64(i) * 0.5
+		na.Data[i] = {{.Format}}(i)
+		nb.Data[i] = {{.Format}}(i) * 0.5
 	}
 
 	b.ResetTimer()
@@ -760,8 +760,8 @@ func BenchmarkSub10001(b *testing.B) {
 	nb := New(N)
 	dst := New(N)
 	for i := 0; i < N; i++ {
-		na.Data[i] = float64(i)
-		nb.Data[i] = float64(i) * 0.5
+		na.Data[i] = {{.Format}}(i)
+		nb.Data[i] = {{.Format}}(i) * 0.5
 	}
 
 	b.ResetTimer()
@@ -777,8 +777,8 @@ func BenchmarkSubScaleMul10001(b *testing.B) {
 	nb := New(N)
 	dst := New(N)
 	for i := 0; i < N; i++ {
-		na.Data[i] = float64(i)
-		nb.Data[i] = float64(i) * 0.5
+		na.Data[i] = {{.Format}}(i)
+		nb.Data[i] = {{.Format}}(i) * 0.5
 	}
 
 	b.ResetTimer()
@@ -794,8 +794,8 @@ func BenchmarkMul10001(b *testing.B) {
 	nb := New(N)
 	dst := New(N)
 	for i := 0; i < N; i++ {
-		na.Data[i] = float64(i)
-		nb.Data[i] = float64(i) * 0.5
+		na.Data[i] = {{.Format}}(i)
+		nb.Data[i] = {{.Format}}(i) * 0.5
 	}
 
 	b.ResetTimer()
@@ -811,8 +811,8 @@ func BenchmarkDiv10001(b *testing.B) {
 	nb := New(N)
 	dst := New(N)
 	for i := 0; i < N; i++ {
-		na.Data[i] = float64(i)
-		nb.Data[i] = float64(i) * 0.5
+		na.Data[i] = {{.Format}}(i)
+		nb.Data[i] = {{.Format}}(i) * 0.5
 	}
 
 	b.ResetTimer()
@@ -828,8 +828,8 @@ func BenchmarkDivRcpMul10001(b *testing.B) {
 	nb := New(N)
 	dst := New(N)
 	for i := 0; i < N; i++ {
-		na.Data[i] = float64(i)
-		nb.Data[i] = float64(i) * 0.5
+		na.Data[i] = {{.Format}}(i)
+		nb.Data[i] = {{.Format}}(i) * 0.5
 	}
 
 	b.ResetTimer()
@@ -844,8 +844,8 @@ func BenchmarkAddScaled10001(b *testing.B) {
 	na := New(N)
 	nb := New(N)
 	for i := 0; i < N; i++ {
-		na.Data[i] = float64(i)
-		nb.Data[i] = float64(i) * 0.5
+		na.Data[i] = {{.Format}}(i)
+		nb.Data[i] = {{.Format}}(i) * 0.5
 	}
 
 	b.ResetTimer()
@@ -861,8 +861,8 @@ func BenchmarkMin10001(b *testing.B) {
 	nb := New(N)
 	dst := New(N)
 	for i := 0; i < N; i++ {
-		na.Data[i] = float64(i)
-		nb.Data[i] = float64(i) * 0.5
+		na.Data[i] = {{.Format}}(i)
+		nb.Data[i] = {{.Format}}(i) * 0.5
 	}
 
 	b.ResetTimer()
@@ -878,8 +878,8 @@ func BenchmarkMax10001(b *testing.B) {
 	nb := New(N)
 	dst := New(N)
 	for i := 0; i < N; i++ {
-		na.Data[i] = float64(i)
-		nb.Data[i] = float64(i) * 0.5
+		na.Data[i] = {{.Format}}(i)
+		nb.Data[i] = {{.Format}}(i) * 0.5
 	}
 
 	b.ResetTimer()
@@ -893,7 +893,7 @@ func BenchmarkMinValue10001(b *testing.B) {
 	N := 10001
 	na := New(N)
 	for i := 0; i < N; i++ {
-		na.Data[i] = float64(i)
+		na.Data[i] = {{.Format}}(i)
 	}
 
 	b.ResetTimer()
@@ -907,7 +907,7 @@ func BenchmarkMaxValue10001(b *testing.B) {
 	N := 10001
 	na := New(N)
 	for i := 0; i < N; i++ {
-		na.Data[i] = float64(i)
+		na.Data[i] = {{.Format}}(i)
 	}
 
 	b.ResetTimer()
@@ -921,7 +921,7 @@ func BenchmarkSum10001(b *testing.B) {
 	N := 10001
 	na := New(N)
 	for i := 0; i < N; i++ {
-		na.Data[i] = float64(i)
+		na.Data[i] = {{.Format}}(i)
 	}
 
 	b.ResetTimer()
@@ -936,7 +936,7 @@ func BenchmarkRcp10001(b *testing.B) {
 	na := New(N)
 	dst := New(N)
 	for i := 0; i < N; i++ {
-		na.Data[i] = float64(i)
+		na.Data[i] = {{.Format}}(i)
 	}
 
 	b.ResetTimer()
@@ -951,7 +951,7 @@ func BenchmarkSqrt10001(b *testing.B) {
 	na := New(N)
 	dst := New(N)
 	for i := 0; i < N; i++ {
-		na.Data[i] = float64(i)
+		na.Data[i] = {{.Format}}(i)
 	}
 
 	b.ResetTimer()
@@ -966,7 +966,7 @@ func BenchmarkAbs10001(b *testing.B) {
 	na := New(N)
 	dst := New(N)
 	for i := 0; i < N; i++ {
-		na.Data[i] = float64(i)
+		na.Data[i] = {{.Format}}(i)
 	}
 
 	b.ResetTimer()
@@ -981,7 +981,7 @@ func BenchmarkScale10001(b *testing.B) {
 	na := New(N)
 	dst := New(N)
 	for i := 0; i < N; i++ {
-		na.Data[i] = float64(i)
+		na.Data[i] = {{.Format}}(i)
 	}
 
 	b.ResetTimer()
@@ -996,7 +996,7 @@ func BenchmarkConstAdd10001(b *testing.B) {
 	na := New(N)
 	dst := New(N)
 	for i := 0; i < N; i++ {
-		na.Data[i] = float64(i)
+		na.Data[i] = {{.Format}}(i)
 	}
 
 	b.ResetTimer()

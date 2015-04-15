@@ -1,8 +1,10 @@
 // +build !amd64
 
-package narray
+package {{.Package}}
 
-import "math"
+import (
+	"math"
+)
 
 // These are the fallbacks that are used when not on AMD64 platform.
 
@@ -10,19 +12,9 @@ import "math"
 // Assumptions the assembly can make:
 // out != nil, a != nil, b != nil
 // len(out)  == len(a) == len(b)
-func divSlice(out, a, b []float64) {
+func divSlice(out, a, b []{{.Format}}) {
 	for i := 0; i < len(out); i++ {
 		out[i] = a[i] / b[i]
-	}
-}
-
-// subSlice subtracts two slices
-// Assumptions the assembly can make:
-// out != nil, a != nil, b != nil
-// len(out)  == len(a) == len(b)
-func subSlice(out, a, b []float64) {
-	for i := 0; i < len(out); i++ {
-		out[i] = a[i] - b[i]
 	}
 }
 
@@ -30,7 +22,17 @@ func subSlice(out, a, b []float64) {
 // Assumptions the assembly can make:
 // out != nil, a != nil, b != nil
 // len(out)  == len(a) == len(b)
-func addSlice(out, a, b []float64) {
+func addSlice(out, a, b []{{.Format}}) {
+	for i := 0; i < len(out); i++ {
+		out[i] = a[i] + b[i]
+	}
+}
+
+// subSlice subtracts two slices
+// Assumptions the assembly can make:
+// out != nil, a != nil, b != nil
+// len(out)  == len(a) == len(b)
+func subSlice(out, a, b []{{.Format}}) {
 	for i := 0; i < len(out); i++ {
 		out[i] = a[i] + b[i]
 	}
@@ -40,7 +42,7 @@ func addSlice(out, a, b []float64) {
 // Assumptions the assembly can make:
 // out != nil, a != nil, b != nil
 // len(out)  == len(a) == len(b)
-func mulSlice(out, a, b []float64) {
+func mulSlice(out, a, b []{{.Format}}) {
 	for i := 0; i < len(out); i++ {
 		out[i] = a[i] * b[i]
 	}
@@ -50,7 +52,7 @@ func mulSlice(out, a, b []float64) {
 // Assumptions the assembly can make:
 // out != nil, a != nil, b != nil
 // len(out)  == len(a) == len(b)
-func minSlice(out, a, b []float64) {
+func minSlice(out, a, b []{{.Format}}) {
 	for i := 0; i < len(out); i++ {
 		if a[i] < b[i] {
 			out[i] = a[i]
@@ -64,7 +66,7 @@ func minSlice(out, a, b []float64) {
 // Assumptions the assembly can make:
 // out != nil, a != nil, b != nil
 // len(out)  == len(a) == len(b)
-func maxSlice(out, a, b []float64) {
+func maxSlice(out, a, b []{{.Format}}) {
 	for i := 0; i < len(out); i++ {
 		if a[i] > b[i] {
 			out[i] = a[i]
@@ -78,7 +80,7 @@ func maxSlice(out, a, b []float64) {
 // Assumptions the assembly can make:
 // out != nil, a != nil
 // len(out)  == len(a)
-func cdivSlice(out, a []float64, c float64) {
+func cdivSlice(out, a []{{.Format}}, c {{.Format}}) {
 	for i := 0; i < len(out); i++ {
 		out[i] = c / a[i]
 	}
@@ -88,7 +90,7 @@ func cdivSlice(out, a []float64, c float64) {
 // Assumptions the assembly can make:
 // out != nil, a != nil
 // len(out)  == len(a)
-func cmulSlice(out, a []float64, c float64) {
+func cmulSlice(out, a []{{.Format}}, c {{.Format}}) {
 	for i := 0; i < len(out); i++ {
 		out[i] = c * a[i]
 	}
@@ -98,7 +100,7 @@ func cmulSlice(out, a []float64, c float64) {
 // Assumptions the assembly can make:
 // out != nil, a != nil
 // len(out)  == len(a)
-func caddSlice(out, a []float64, c float64) {
+func caddSlice(out, a []{{.Format}}, c {{.Format}}) {
 	for i := 0; i < len(out); i++ {
 		out[i] = c + a[i]
 	}
@@ -109,7 +111,7 @@ func caddSlice(out, a []float64, c float64) {
 // Assumptions the assembly can make:
 // y != nil, a != nil
 // len(x)  == len(y)
-func addScaledSlice(y, x []float64, a float64) {
+func addScaledSlice(y, x []{{.Format}}, a {{.Format}}) {
 	for i, v := range x {
 		y[i] += v * a
 	}
@@ -119,9 +121,9 @@ func addScaledSlice(y, x []float64, a float64) {
 // Assumptions the assembly can make:
 // out != nil, a != nil
 // len(out)  == len(a)
-func sqrtSlice(out, a []float64) {
+func sqrtSlice(out, a []{{.Format}}) {
 	for i := 0; i < len(out); i++ {
-		out[i] = math.Sqrt(a[i])
+		out[i] = {{.Format}}(math.Sqrt(float64(a[i])))
 	}
 }
 
@@ -129,7 +131,7 @@ func sqrtSlice(out, a []float64) {
 // Assumptions the assembly can make:
 // a != nil
 // len(a) > 0
-func minSliceElement(a []float64) float64 {
+func minSliceElement(a []{{.Format}}) {{.Format}} {
 	min := a[0]
 	for i := 1; i < len(a); i++ {
 		if a[i] < min {
@@ -143,7 +145,7 @@ func minSliceElement(a []float64) float64 {
 // Assumptions the assembly can make:
 // a != nil
 // len(a) > 0
-func maxSliceElement(a []float64) float64 {
+func maxSliceElement(a []{{.Format}}) {{.Format}} {
 	max := a[0]
 	for i := 1; i < len(a); i++ {
 		if a[i] > max {
@@ -157,8 +159,8 @@ func maxSliceElement(a []float64) float64 {
 // Assumptions the assembly can make:
 // a != nil
 // len(a) >= 0
-func sliceSum(a []float64) float64 {
-	sum := 0.0
+func sliceSum(a []{{.Format}}) {{.Format}} {
+	sum := {{.Format}}(0.0)
 	for _, v := range a {
 		sum += v
 	}
@@ -169,8 +171,8 @@ func sliceSum(a []float64) float64 {
 // Assumptions the assembly can make:
 // out != nil, a != nil
 // len(out)  == len(a)
-func absSlice(out, a []float64) {
+func absSlice(out, a []{{.Format}}) {
 	for i, v := range a {
-		out[i] = math.Abs(v)
+		out[i] = {{.Format}}(math.Abs(float64(v)))
 	}
 }
