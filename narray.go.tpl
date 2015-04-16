@@ -449,6 +449,24 @@ func MaxArray(out *NArray, in ...*NArray) *NArray {
 	return out
 }
 
+// Copysign returns values with the magnitude of a and the sign of b
+// for each element of the arrays.
+// Will panic if narray shapes don't match.
+// If out is nil a new array is created.
+func Copysign(out, a, b *NArray) *NArray {
+
+	if out == nil {
+		out = New(a.Shape...)
+	}
+	if !EqualShape(out, a, b) {
+		panic("narrays must have equal shape.")
+	}
+
+	csignSlice(out.Data, a.Data, b.Data)
+
+	return out
+}
+
 // Min returns the min value in the narray.
 func (na *NArray) Min() {{.Format}} {
 	if na == nil || len(na.Data) == 0 {

@@ -1,5 +1,5 @@
 
-// func divSlice(out []float32, a []float32, b []float32) 
+// func divSlice(out []float32, a []float32, b []float32)
 TEXT ·divSlice(SB), 7, $0
     MOVQ    out+0(FP),SI        // SI: &out
     MOVQ    out_len+8(FP),DX    // DX: len(out)
@@ -27,7 +27,7 @@ loopback_div:
 remain_div:
     CMPQ    R10,$0
     JEQ     done_div
-onemore_div:    
+onemore_div:
     MOVSS   (R11),X0
     MOVSS   (R9),X1
     DIVSS   X1,X0
@@ -42,7 +42,7 @@ done_div:
 
 
 
-// func mulSlice(out []float32, a []float32, b []float32) 
+// func mulSlice(out []float32, a []float32, b []float32)
 TEXT ·mulSlice(SB), 7, $0
     MOVQ    out(FP),SI          // SI: &out
     MOVQ    out_len+8(FP),DX    // DX: len(out)
@@ -70,7 +70,7 @@ loopback_mul:
 remain_mul:
     CMPQ    R10,$0
     JEQ     done_mul
-onemore_mul:    
+onemore_mul:
     MOVSS   (R11),X0
     MOVSS   (R9),X1
     MULSS   X1,X0
@@ -80,11 +80,11 @@ onemore_mul:
     ADDQ    $4, SI
     SUBQ    $1, R10
     JNZ     onemore_mul
-done_mul:   
+done_mul:
     RET ,
 
 
-// func addSlice(out []float32, a []float32, b []float32) 
+// func addSlice(out []float32, a []float32, b []float32)
 TEXT ·addSlice(SB), 7, $0
     MOVQ    out(FP),SI          // SI: &out
     MOVQ    out_len+8(FP),DX    // DX: len(out)
@@ -112,7 +112,7 @@ loopback_add:
 remain_add:
     CMPQ    R10,$0
     JEQ     done_add
-onemore_add:    
+onemore_add:
     MOVSS   (R11),X0
     MOVSS   (R9),X1
     ADDSS   X1,X0
@@ -122,10 +122,10 @@ onemore_add:
     ADDQ    $4, SI
     SUBQ    $1, R10
     JNZ     onemore_add
-done_add:   
+done_add:
     RET ,
 
-// func subSlice(out []float32, a []float32, b []float32) 
+// func subSlice(out []float32, a []float32, b []float32)
 TEXT ·subSlice(SB), 7, $0
     MOVQ    out+0(FP),SI        // SI: &out
     MOVQ    out_len+8(FP),DX    // DX: len(out)
@@ -153,7 +153,7 @@ loopback_sub:
 remain_sub:
     CMPQ    R10,$0
     JEQ     done_sub
-onemore_sub:    
+onemore_sub:
     MOVSS   (R11),X0
     MOVSS   (R9),X1
     SUBSS   X1,X0
@@ -166,7 +166,7 @@ onemore_sub:
 done_sub:
     RET ,
 
-// func minSlice(out []float32, a []float32, b []float32) 
+// func minSlice(out []float32, a []float32, b []float32)
 TEXT ·minSlice(SB), 7, $0
     MOVQ    out(FP),SI          // SI: &out
     MOVQ    out_len+8(FP),DX    // DX: len(out)
@@ -194,7 +194,7 @@ loopback_min:
 remain_min:
     CMPQ    R10,$0
     JEQ     done_min
-onemore_min:    
+onemore_min:
     MOVSS   (R11),X0
     MOVSS   (R9),X1
     MINSS   X1,X0
@@ -204,10 +204,10 @@ onemore_min:
     ADDQ    $4, SI
     SUBQ    $1, R10
     JNZ     onemore_min
-done_min:   
+done_min:
     RET ,
 
-// func maxSlice(out []float32, a []float32, b []float32) 
+// func maxSlice(out []float32, a []float32, b []float32)
 TEXT ·maxSlice(SB), 7, $0
     MOVQ    out(FP),SI          // SI: &out
     MOVQ    out_len+8(FP),DX    // DX: len(out)
@@ -235,7 +235,7 @@ loopback_max:
 remain_max:
     CMPQ    R10,$0
     JEQ     done_max
-onemore_max:    
+onemore_max:
     MOVSS   (R11),X0
     MOVSS   (R9),X1
     MAXSS   X1,X0
@@ -245,10 +245,65 @@ onemore_max:
     ADDQ    $4, SI
     SUBQ    $1, R10
     JNZ     onemore_max
-done_max:   
+done_max:
     RET ,
 
-// func cdivSlice(out []float32, a []float32, c float32) 
+
+// func csignSlice(out []float64, a []float64, b []float64)
+TEXT ·csignSlice(SB), 7, $0
+    MOVQ    out(FP),SI          // SI: &out
+    MOVQ    out_len+8(FP),DX    // DX: len(out)
+    MOVQ    a+24(FP),R11        // R11: &a
+    MOVQ    b+48(FP),R9         // R9: &b
+    MOVQ    DX, R10             // R10: len(out)
+    MOVQ    $(1<<63), BX
+    MOVQ    BX, X4             // X4: Sign
+    SHUFPS  $0, X4, X4
+    SHRQ    $3, DX              // DX: len(out) / 8
+    ANDQ    $7, R10             // R10: len(out) % 8
+    CMPQ    DX ,$0
+    JEQ     remain_csign
+loopback_csign:
+    MOVAPS  X4, X5
+    MOVAPS  X4, X6
+    MOVUPS  (R11),X0
+    MOVUPS  (R9),X1
+    MOVUPS  16(R11),X2
+    MOVUPS  16(R9),X3
+    ANDNPS  X0, X5
+    ANDPS   X4, X1
+    ORPS    X5, X1
+
+    ANDNPS  X2, X6
+    ANDPS   X4, X3
+    ORPS    X6, X3
+    MOVUPS  X1,(SI)
+    MOVUPS  X3,16(SI)
+    ADDQ    $32, R11
+    ADDQ    $32, R9
+    ADDQ    $32, SI
+    SUBQ    $1,DX
+    JNZ     loopback_csign
+remain_csign:
+    CMPQ    R10,$0
+    JEQ     done_csign
+onemore_csign:
+    MOVSS   X4, X5
+    MOVSS   (R11),X0
+    MOVSS   (R9),X1
+    ANDNSS  X0, X5
+    ANDSS   X4, X1
+    ORSS    X5, X1
+    MOVSS   X1,(SI)
+    ADDQ    $4, R11
+    ADDQ    $4, R9
+    ADDQ    $4, SI
+    SUBQ    $1, R10
+    JNZ     onemore_csign
+done_csign:
+    RET ,
+
+// func cdivSlice(out []float32, a []float32, c float32)
 TEXT ·cdivSlice(SB), 7, $0
     MOVQ    out(FP),SI          // SI: &out
     MOVQ    out_len+8(FP),DX    // DX: len(out)
@@ -276,7 +331,7 @@ loopback_cdiv:
 remain_cdiv:
     CMPQ    R10,$0
     JEQ     done_cdiv
-onemore_cdiv:   
+onemore_cdiv:
     MOVAPS  X4, X1
     MOVSS   (R11),X0
     DIVSS   X0,X1
@@ -285,11 +340,11 @@ onemore_cdiv:
     ADDQ    $4, SI
     SUBQ    $1, R10
     JNZ     onemore_cdiv
-done_cdiv:  
+done_cdiv:
     RET ,
 
 
-// func cmulSlice(out []float32, a []float32, c float32) 
+// func cmulSlice(out []float32, a []float32, c float32)
 TEXT ·cmulSlice(SB), 7, $0
     MOVQ    out(FP),SI          // SI: &out
     MOVQ    out_len+8(FP),DX    // DX: len(out)
@@ -315,7 +370,7 @@ loopback_cmul:
 remain_cmul:
     CMPQ    R10,$0
     JEQ     done_cmul
-onemore_cmul:   
+onemore_cmul:
     MOVSS   (R11),X0
     MULSS   X4,X0
     MOVSS   X0,(SI)
@@ -323,11 +378,11 @@ onemore_cmul:
     ADDQ    $4, SI
     SUBQ    $1, R10
     JNZ     onemore_cmul
-done_cmul:  
+done_cmul:
     RET ,
 
 
-// func caddSlice(out []float32, a []float32, c float32) 
+// func caddSlice(out []float32, a []float32, c float32)
 TEXT ·caddSlice(SB), 7, $0
     MOVQ    out(FP),SI          // SI: &out
     MOVQ    out_len+8(FP),DX    // DX: len(out)
@@ -353,7 +408,7 @@ loopback_cadd:
 remain_cadd:
     CMPQ    R10,$0
     JEQ     done_cadd
-onemore_cadd:   
+onemore_cadd:
     MOVSS   (R11),X0
     ADDSS   X4,X0
     MOVSS   X0,(SI)
@@ -361,11 +416,11 @@ onemore_cadd:
     ADDQ    $4, SI
     SUBQ    $1, R10
     JNZ     onemore_cadd
-done_cadd:  
+done_cadd:
     RET ,
 
 
-// func addScaledSlice(y []float32, x []float32, a float32) 
+// func addScaledSlice(y []float32, x []float32, a float32)
 TEXT ·addScaledSlice(SB), 7, $0
     MOVQ    y(FP),SI            // SI: &y
     MOVQ    y_len+8(FP),DX      // DX: len(y)
@@ -395,7 +450,7 @@ loopback_madd:
 remain_madd:
     CMPQ    R10,$0
     JEQ     done_madd
-onemore_madd:   
+onemore_madd:
     MOVSS   (R11),X0
     MOVSS   (SI),X1
     MULSS   X4,X0
@@ -405,10 +460,10 @@ onemore_madd:
     ADDQ    $4, SI
     SUBQ    $1, R10
     JNZ     onemore_madd
-done_madd:  
+done_madd:
     RET ,
 
-// func sqrtSlice(out []float32, a []float32) 
+// func sqrtSlice(out []float32, a []float32)
 TEXT ·sqrtSlice(SB), 7, $0
     MOVQ    out(FP),SI          // SI: &out
     MOVQ    out_len+8(FP),DX    // DX: len(out)
@@ -432,7 +487,7 @@ loopback_sqrt:
 remain_sqrt:
     CMPQ    R10,$0
     JEQ     done_sqrt
-onemore_sqrt:   
+onemore_sqrt:
     MOVSS   (R11),X0
     SQRTSS  X0,X0
     MOVSS   X0,(SI)
@@ -440,10 +495,10 @@ onemore_sqrt:
     ADDQ    $4, SI
     SUBQ    $1, R10
     JNZ     onemore_sqrt
-done_sqrt:  
+done_sqrt:
     RET ,
 
-// func absSlice(out []float32, a []float32) 
+// func absSlice(out []float32, a []float32)
 TEXT ·absSlice(SB), 7, $0
     MOVQ    out(FP),SI          // SI: &out
     MOVQ    out_len+8(FP),DX    // DX: len(out)
@@ -473,7 +528,7 @@ remain_abs:
     CMPQ    R10,$0
     JEQ     done_abs
 onemore_abs:
-    MOVAPS  X5, X1 
+    MOVAPS  X5, X1
     MOVSS   (R11),X0
     ANDNPS  X0, X1
     MOVSS   X1,(SI)
@@ -481,7 +536,7 @@ onemore_abs:
     ADDQ    $4, SI
     SUBQ    $1, R10
     JNZ     onemore_abs
-done_abs:  
+done_abs:
     RET ,
 
 // func minSliceElement(a []float32) float32
@@ -515,7 +570,7 @@ remain_min_e:
     ADDQ    $4, SI
     SUBQ    $1, R10
     JNZ     remain_min_e
-done_min_e:    
+done_min_e:
     MINPS    X1, X0
     SHUFPS   $1, X0, X1        // Put Element 1 into lower X1
     SHUFPS   $2, X0, X2        // Put Element 2 into lower X2
@@ -559,7 +614,7 @@ remain_max_e:
     ADDQ    $4, SI
     SUBQ    $1, R10
     JNZ     remain_max_e
-done_max_e:    
+done_max_e:
     MAXPS    X1, X0
     SHUFPS   $1, X0, X1        // Put Element 1 into lower X1
     SHUFPS   $2, X0, X2        // Put Element 2 into lower X2
@@ -580,7 +635,7 @@ TEXT ·sliceSum(SB), 7, $0
     XORPS   X0, X0            // Sum 1
     XORPS   X1, X1            // Sum 2
 
-    MOVQ    DX, R10             // R10: len(out) 
+    MOVQ    DX, R10             // R10: len(out)
     SHRQ    $3, DX              // DX: (len(out)) / 8
     ANDQ    $7, R10             // R10: (len(out)) % 8
     CMPQ    DX ,$0
@@ -601,7 +656,7 @@ remain_sum:
     ADDQ    $4, SI
     SUBQ    $1, R10
     JNZ     remain_sum
-done_sum:    
+done_sum:
     ADDPS   X1, X0
     SHUFPS  $1, X0, X1        // Put Element 1 into lower X1
     SHUFPS  $2, X0, X2        // Put Element 2 into lower X2

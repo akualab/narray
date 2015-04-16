@@ -70,6 +70,16 @@ func maxSliceGo(out, a, b []float64) {
 	}
 }
 
+// approx Xx faster than Go
+func csignSlice(out, a, b []float64)
+
+func csignSliceGo(out, a, b []float64) {
+	const sign = 1 << 63
+	for i := 0; i < len(out); i++ {
+		out[i] = math.Float64frombits(math.Float64bits(a[i])&^sign | math.Float64bits(b[i])&sign)
+	}
+}
+
 // approx 2x faster than Go
 func cdivSlice(out, a []float64, c float64)
 

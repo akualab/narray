@@ -36,7 +36,7 @@ func addSlice(out, a, b []float64) {
 // len(out)  == len(a) == len(b)
 func subSlice(out, a, b []float64) {
 	for i := 0; i < len(out); i++ {
-		out[i] = a[i] + b[i]
+		out[i] = a[i] - b[i]
 	}
 }
 
@@ -75,6 +75,19 @@ func maxSlice(out, a, b []float64) {
 		} else {
 			out[i] = b[i]
 		}
+	}
+}
+
+// csignSlice returns a value with the magnitude of a and the sign of b
+// for each element in the slice.
+// Assumptions the assembly can make:
+// out != nil, a != nil, b != nil
+// len(out)  == len(a) == len(b)
+func csignSlice(out, a, b []float64) {
+	const sign = 1 << 63
+	for i := 0; i < len(out); i++ {
+		out[i] = math.Float64frombits(math.Float64bits(a[i])&^sign | math.Float64bits(b[i])&sign)
+
 	}
 }
 

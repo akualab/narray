@@ -891,6 +891,23 @@ func BenchmarkMax10001(b *testing.B) {
 	}
 }
 
+func BenchmarkCopySign10001(b *testing.B) {
+	N := 10001
+	na := New(N)
+	nb := New(N)
+	dst := New(N)
+	for i := 0; i < N; i++ {
+		na.Data[i] = float32(i)
+		nb.Data[i] = float32(i) * 0.5
+	}
+
+	b.ResetTimer()
+	b.SetBytes(int64(N * 8))
+	for i := 0; i < b.N; i++ {
+		dst = Copysign(dst, na, nb)
+	}
+}
+
 func BenchmarkMinValue10001(b *testing.B) {
 	N := 10001
 	na := New(N)

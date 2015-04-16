@@ -23,7 +23,7 @@ import (
 	"text/template"
 )
 
-var exclude = map[string]bool{"Sqrt": true, "Abs": true, "Min": true, "Max": true}
+var exclude = map[string]bool{"Sqrt": true, "Abs": true, "Min": true, "Max": true, "Copysign": true}
 
 // Match lines with pattern: "func Log(x float64) float64"
 var re1 = regexp.MustCompile("^func ([A-Z][[:alnum:]]*)[(][[:alnum:]]+ float64[)] float64")
