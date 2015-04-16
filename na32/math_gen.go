@@ -586,42 +586,6 @@ func Dim(out, a, b *NArray) *NArray {
 	return out
 }
 
-// Max applies math.Max() elementwise to two multidimensional arrays.
-// See math package in standard lib for details.
-//
-// If out is nil a new array is created.
-// Will panic if 'out', 'a' and 'b' shapes don't match.
-func Max(out, a, b *NArray) *NArray {
-	if out == nil {
-		out = New(a.Shape...)
-	}
-	if !EqualShape(out, a, b) {
-		panic("Max:narrays must have equal shape.")
-	}
-	for k, v := range a.Data {
-		out.Data[k] = float32(math.Max(float64(v), float64(b.Data[k])))
-	}
-	return out
-}
-
-// Min applies math.Min() elementwise to two multidimensional arrays.
-// See math package in standard lib for details.
-//
-// If out is nil a new array is created.
-// Will panic if 'out', 'a' and 'b' shapes don't match.
-func Min(out, a, b *NArray) *NArray {
-	if out == nil {
-		out = New(a.Shape...)
-	}
-	if !EqualShape(out, a, b) {
-		panic("Min:narrays must have equal shape.")
-	}
-	for k, v := range a.Data {
-		out.Data[k] = float32(math.Min(float64(v), float64(b.Data[k])))
-	}
-	return out
-}
-
 // Hypot applies math.Hypot() elementwise to two multidimensional arrays.
 // See math package in standard lib for details.
 //
