@@ -572,9 +572,12 @@ remain_min_e:
     JNZ     remain_min_e
 done_min_e:
     MINPS    X1, X0
-    SHUFPS   $1, X0, X1        // Put Element 1 into lower X1
-    SHUFPS   $2, X0, X2        // Put Element 2 into lower X2
-    SHUFPS   $3, X0, X3        // Put Element 3 into lower X3
+    MOVAPS   X0, X1
+    MOVAPS   X0, X2
+    MOVAPS   X0, X3
+    SHUFPS   $1, X1, X1        // Put Element 1 into lower X1
+    SHUFPS   $2, X2, X2        // Put Element 2 into lower X2
+    SHUFPS   $3, X3, X3        // Put Element 3 into lower X3
 
     MINSS    X1, X0
     MINSS    X3, X2
@@ -616,9 +619,12 @@ remain_max_e:
     JNZ     remain_max_e
 done_max_e:
     MAXPS    X1, X0
-    SHUFPS   $1, X0, X1        // Put Element 1 into lower X1
-    SHUFPS   $2, X0, X2        // Put Element 2 into lower X2
-    SHUFPS   $3, X0, X3        // Put Element 3 into lower X3
+    MOVAPS   X0, X1
+    MOVAPS   X0, X2
+    MOVAPS   X0, X3
+    SHUFPS   $1, X1, X1        // Put Element 1 into lower X1
+    SHUFPS   $2, X2, X2        // Put Element 2 into lower X2
+    SHUFPS   $3, X3, X3        // Put Element 3 into lower X3
 
     MAXSS    X1, X0
     MAXSS    X3, X2
@@ -658,9 +664,12 @@ remain_sum:
     JNZ     remain_sum
 done_sum:
     ADDPS   X1, X0
-    SHUFPS  $1, X0, X1        // Put Element 1 into lower X1
-    SHUFPS  $2, X0, X2        // Put Element 2 into lower X2
-    SHUFPS  $3, X0, X3        // Put Element 3 into lower X3
+    MOVAPS  X0, X1
+    MOVAPS  X0, X2
+    MOVAPS  X0, X3
+    SHUFPS  $1, X1, X1        // Put Element 1 into lower X1
+    SHUFPS  $2, X2, X2        // Put Element 2 into lower X2
+    SHUFPS  $3, X3, X3        // Put Element 3 into lower X3
 
     ADDSS   X1, X0
     ADDSS   X3, X2
