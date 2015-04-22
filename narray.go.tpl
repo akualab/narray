@@ -65,6 +65,33 @@ func New(shape ...int) *NArray {
 	}
 }
 
+// NewArray creates a new n-dimensional array with content of a slice
+// The size of the slice must match the product of the slice, 
+// otherwise a panic will occur
+func NewArray(a []{{.Format}},shape ...int) *NArray {
+	size := 1
+	rank := len(shape)
+	for _, v := range shape {
+		size *= v
+	}
+	strides := make([]int, rank, rank)
+	s := 1
+	for i := (rank - 1); i >= 0; i-- {
+		strides[i] = s
+		s *= shape[i]
+	}
+
+	if len(a) != size {
+		panic("slice doesn't match size")
+	}
+	return &NArray{
+		Rank:    rank,
+		Shape:   shape,
+		Data:    a,
+		Strides: strides,
+	}
+}
+
 // Norm creates a new n-dimensional array whose
 // elements are drawn from a Normal probability density function.
 func Norm(r *rand.Rand, mean, sd {{.Format}}, shape ...int) *NArray {
