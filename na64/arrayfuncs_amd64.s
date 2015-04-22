@@ -289,9 +289,9 @@ onemore_csign:
 	MOVSD   X4, X5
     MOVSD   (R11),X0
     MOVSD   (R9),X1
-    ANDNSD  X0, X5
-    ANDSD   X4, X1
-    ORSD    X5, X1
+    ANDNPD  X0, X5
+    ANDPD   X4, X1
+    ORPD    X5, X1
     MOVSD   X1,(SI)
     ADDQ    $8, R11
     ADDQ    $8, R9

@@ -291,9 +291,9 @@ onemore_csign:
     MOVSS   X4, X5
     MOVSS   (R11),X0
     MOVSS   (R9),X1
-    ANDNSS  X0, X5
-    ANDSS   X4, X1
-    ORSS    X5, X1
+    ANDNPS  X0, X5
+    ANDPS   X4, X1
+    ORPS    X5, X1
     MOVSS   X1,(SI)
     ADDQ    $4, R11
     ADDQ    $4, R9
