@@ -26,8 +26,8 @@ go get -u github.com/akualab/narray/na64
 go get -u github.com/akualab/narray/na32
 
 ## Documentation
-http://godoc.org/github.com/akualab/narray/na64
-http://godoc.org/github.com/akualab/narray/na32
+* [Godoc na64](http://godoc.org/github.com/akualab/narray/na64)
+* [Godoc na32](http://godoc.org/github.com/akualab/narray/na32)
 
 ## Code Generation
 Code generation is only done by the narray package developers. End users don't have to generate any code.
