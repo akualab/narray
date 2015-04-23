@@ -550,6 +550,26 @@ func TestSum(t *testing.T) {
 	}
 }
 
+func TestDot(t *testing.T) {
+
+   	z := Dot(randna[0],randna[1])
+	xx := New(randna[0].Shape...)
+	xx.SetValue(1)
+	for i, _ := range randna[:2] {
+		for k, v := range randna[i].Data {
+			xx.Data[k] *= v
+		}
+	}
+    sum := 0.0
+    for _, v := range xx.Data {
+		sum += v
+	}
+
+	if math.Abs(z -sum) / z > 0.001 {
+		t.Fatalf("expected %f, got %f", z, sum)
+	}
+}
+
 func TestProd(t *testing.T) {
 	xx := New(2, 2)
 	xx.Set(1, 0, 0)

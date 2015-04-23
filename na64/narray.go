@@ -284,6 +284,32 @@ func Mul(out *NArray, in ...*NArray) *NArray {
 	return out
 }
 
+// Dot computes the sum of the elementwise products of
+// the input arrays.
+//
+//   y = sum_{i = 0}^(N-1) x0[i]*x1[i]*...x_n-1[i]
+//
+// Will panic if there are not at least two input narrays
+// or if narray shapes don't match.
+func Dot(in ...*NArray) float64 {
+
+	if len(in) < 2 {
+		panic("not in enough arguments")
+	}
+	if !EqualShape(in[0], in...) {
+		panic("narrays must have equal shape.")
+	}
+	n := len(in[0].Data)
+	out := make([]float64, n, n)
+	mulSlice(out, in[0].Data, in[1].Data)
+
+	// Multiply each following, if more than two arguments.
+	for k := 2; k < len(in); k++ {
+		mulSlice(out, out, in[k].Data)
+	}
+	return sliceSum(out)
+}
+
 // Div divides narrays elementwise.
 //   out = in[0] / in[1] / in[2] ....
 // Will panic if there are not at least two input narrays
