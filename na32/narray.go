@@ -291,7 +291,7 @@ func Mul(out *NArray, in ...*NArray) *NArray {
 //
 // Will panic if there are not at least two input narrays
 // or if narray shapes don't match.
-func Dot(in ...*NArray) float64 {
+func Dot(in ...*NArray) float32 {
 
 	if len(in) < 2 {
 		panic("not in enough arguments")
@@ -300,7 +300,7 @@ func Dot(in ...*NArray) float64 {
 		panic("narrays must have equal shape.")
 	}
 	n := len(in[0].Data)
-	out := make([]float64, n, n)
+	out := make([]float32, n, n)
 	mulSlice(out, in[0].Data, in[1].Data)
 
 	// Multiply each following, if more than two arguments.
