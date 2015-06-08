@@ -562,12 +562,12 @@ func TestDot(t *testing.T) {
 			xx.Data[k] *= v
 		}
 	}
-	sum := 0.0
+	sum := float64(0.0)
 	for _, v := range xx.Data {
 		sum += v
 	}
 
-	if math.Abs(z-sum)/z > 0.001 {
+	if math.Abs(float64(z-sum))/float64(z) > 0.001 {
 		t.Fatalf("expected %f, got %f", z, sum)
 	}
 }
