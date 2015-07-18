@@ -38,7 +38,7 @@ onemore_div:
     SUBQ    $1, R10
     JNZ     onemore_div
 done_div:
-    RET ,
+    RET
 
 
 // func subSlice(out []float64, a []float64, b []float64)
@@ -121,7 +121,7 @@ onemore_mul:
     SUBQ    $1, R10
     JNZ     onemore_mul
 done_mul:
-    RET ,
+    RET
 
 
 // func addSlice(out []float64, a []float64, b []float64)
@@ -163,7 +163,7 @@ onemore_add:
     SUBQ    $1, R10
     JNZ     onemore_add
 done_add:
-    RET ,
+    RET
 
 // func minSlice(out []float64, a []float64, b []float64)
 TEXT ·minSlice(SB), 7, $0
@@ -204,7 +204,7 @@ onemore_min:
     SUBQ    $1, R10
     JNZ     onemore_min
 done_min:
-    RET ,
+    RET
 
 // func maxSlice(out []float64, a []float64, b []float64)
 TEXT ·maxSlice(SB), 7, $0
@@ -245,7 +245,7 @@ onemore_max:
     SUBQ    $1, R10
     JNZ     onemore_max
 done_max:
-    RET ,
+    RET
 
 // func csignSlice(out []float64, a []float64, b []float64)
 TEXT ·csignSlice(SB), 7, $0
@@ -299,7 +299,7 @@ onemore_csign:
     SUBQ    $1, R10
     JNZ     onemore_csign
 done_csign:
-    RET ,
+    RET
 
 // func cdivSlice(out []float64, a []float64, c float64)
 TEXT ·cdivSlice(SB), 7, $0
@@ -339,7 +339,7 @@ onemore_cdiv:
     SUBQ    $1, R10
     JNZ     onemore_cdiv
 done_cdiv:
-    RET ,
+    RET
 
 
 // func cmulSlice(out []float64, a []float64, c float64)
@@ -377,7 +377,7 @@ onemore_cmul:
     SUBQ    $1, R10
     JNZ     onemore_cmul
 done_cmul:
-    RET ,
+    RET
 
 
 // func caddSlice(out []float64, a []float64, c float64)
@@ -415,7 +415,7 @@ onemore_cadd:
     SUBQ    $1, R10
     JNZ     onemore_cadd
 done_cadd:
-    RET ,
+    RET
 
 
 // func addScaledSlice(y []float64, x []float64, a float64)
@@ -459,7 +459,7 @@ onemore_madd:
     SUBQ    $1, R10
     JNZ     onemore_madd
 done_madd:
-    RET ,
+    RET
 
 // func sqrtSlice(out []float64, a []float64)
 TEXT ·sqrtSlice(SB), 7, $0
@@ -494,7 +494,7 @@ onemore_sqrt:
     SUBQ    $1, R10
     JNZ     onemore_sqrt
 done_sqrt:
-    RET ,
+    RET
 
 // func absSlice(out []float64, a []float64)
 TEXT ·absSlice(SB), 7, $0
@@ -535,7 +535,7 @@ onemore_abs:
     SUBQ    $1, R10
     JNZ     onemore_abs
 done_abs:
-    RET ,
+    RET
 
 // func minSliceElement(a []float64) float64
 TEXT ·minSliceElement(SB), 7, $0
@@ -574,7 +574,7 @@ done_min_e:
     UNPCKHPD X0, X2
     MINSD   X2, X0
     MOVSD X0, ret+24(FP)
-    RET ,
+    RET
 
 
 // func maxSliceElement(a []float64) float64
@@ -614,7 +614,7 @@ done_max_e:
     UNPCKHPD X0, X2
     MAXSD   X2, X0
     MOVSD X0, ret+24(FP)
-    RET ,
+    RET
 
 
 
@@ -652,5 +652,5 @@ done_sum:
     UNPCKHPD X0, X2
     ADDSD   X2, X0
     MOVSD   X0, ret+24(FP)
-    RET ,
+    RET
 
