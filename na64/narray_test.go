@@ -75,8 +75,7 @@ func panics(fun func()) (b bool) {
 var x, y, na234 *NArray
 var randna []*NArray
 
-func TestMain(m *testing.M) {
-
+func init() {
 	x = New(3, 5)
 	y = New(3, 5)
 	for i := 0; i < 3; i++ {
@@ -102,7 +101,6 @@ func TestMain(m *testing.M) {
 	for k := range randna {
 		randna[k] = Norm(r, 0.0, 100.0, 11, 3, 8, 22)
 	}
-	os.Exit(m.Run())
 }
 
 func TestF2(t *testing.T) {
