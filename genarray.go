@@ -3,14 +3,14 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// +build ignore
+//go:generate go run genarray.go
 
-// Generate math file using "go run genarray.go"
 package main
 
 import (
 	"bufio"
 	"bytes"
+	"flag"
 	"fmt"
 	"go/format"
 	"io/ioutil"
@@ -31,6 +31,8 @@ var re1 = regexp.MustCompile("^func ([A-Z][[:alnum:]]*)[(][[:alnum:]]+ float64[)
 // Match lines with pattern: "func Remainder(x, y float64) float64"
 var re2 = regexp.MustCompile("^func ([A-Z][[:alnum:]]*)[(][[:alnum:]]+, [[:alnum:]]+ float64[)] float64")
 
+var compare = flag.Bool("compare", false, "Compare generated output to ondisk output. Returnvalue is 0 on match")
+
 type genType struct {
 	Format   string
 	Package  string
@@ -46,6 +48,13 @@ var generateTypes = []genType{
 }
 
 func main() {
+	flag.Parse()
+	ver := runtime.Version()
+	if strings.Contains(ver, "go1.3") || strings.Contains(ver, "go1.2") {
+		log.Println("Generation requires go v1.4 or later, this is", ver)
+		// We exit with 0, so we don't fail tests.
+		os.Exit(0)
+	}
 	for _, t := range generateTypes {
 		fmt.Printf("Generating code for format %s in package %s\n", t.Format, t.Package)
 		genMath(t)
@@ -111,9 +120,20 @@ func genMath(t genType) {
 	src := g.format()
 
 	// Write to file.
-	err := ioutil.WriteFile(outputName, src, 0644)
-	if err != nil {
-		log.Fatalf("writing output: %s", err)
+	if *compare {
+		existing, err := ioutil.ReadFile(outputName)
+		if err != nil {
+			log.Fatalf("opening existing: %s", err)
+		}
+		if bytes.Compare(src, existing) != 0 {
+			log.Println("Mismatch in file", outputName)
+			os.Exit(1)
+		}
+	} else {
+		err := ioutil.WriteFile(outputName, src, 0644)
+		if err != nil {
+			log.Fatalf("writing output: %s", err)
+		}
 	}
 }
 
@@ -243,11 +263,22 @@ func genFiles(t genType) {
 		// Format the output.
 		src := g.format()
 
-		// Write to file.
 		outputName := t.Package + string(os.PathSeparator) + file
-		err = ioutil.WriteFile(outputName, src, 0644)
-		if err != nil {
-			log.Fatalf("writing output: %s", err)
+		if *compare {
+			existing, err := ioutil.ReadFile(outputName)
+			if err != nil {
+				log.Fatalf("opening existing: %s", err)
+			}
+			if bytes.Compare(src, existing) != 0 {
+				log.Println("Mismatch in file", outputName)
+				os.Exit(1)
+			}
+		} else {
+			// Write to file.
+			err = ioutil.WriteFile(outputName, src, 0644)
+			if err != nil {
+				log.Fatalf("writing output: %s", err)
+			}
 		}
 	}
 }
