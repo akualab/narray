@@ -1,4 +1,4 @@
-# Package narray [![Build Status](https://travis-ci.org/klauspost/narray.svg)](https://travis-ci.org/klauspost/narray)
+# Package narray [![Build Status](https://travis-ci.org/leoneu/narray.svg)](https://travis-ci.org/leoneu/narray)
 
 Package narray provides functions to opearate on multidimensional floating-point arrays.
 
